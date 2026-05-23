@@ -27,6 +27,7 @@
 - `literature-survey-builder`
 - `citation-reality-guard`
 - `experiment-story-builder`
+- `latex-first-compile-bootstrap`
 - `proof-consistency-checker`
 - `writing-naturalness-guard`
 - `reviewer-risk-audit`
@@ -48,15 +49,16 @@
 4. `literature-survey-builder`
 5. `citation-reality-guard`
 6. `experiment-story-builder`
-7. `proof-consistency-checker`
-8. `writing-naturalness-guard`
-9. `reviewer-risk-audit`
-10. `paper-ratchet-optimizer`
-11. `latex-submission-packager`
-12. `venue-submission-adapter`
-13. `rebuttal-response-drafter`
+7. `latex-first-compile-bootstrap`
+8. `proof-consistency-checker`
+9. `writing-naturalness-guard`
+10. `reviewer-risk-audit`
+11. `paper-ratchet-optimizer`
+12. `latex-submission-packager`
+13. `venue-submission-adapter`
+14. `rebuttal-response-drafter`
 
-这 13 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview 或某个单一论文类型上。
+这 14 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview 或某个单一论文类型上。
 
 ## 外部 Skills 的整理结论
 
