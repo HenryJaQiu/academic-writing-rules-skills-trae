@@ -1,0 +1,140 @@
+# Skills Index
+
+这份索引文档用于快速回答三个问题：
+
+- 这个 Skill 做什么
+- 什么时候该调用它
+- 它通常接在谁前面或后面
+
+详细规范见：
+
+- `PLAYBOOK.md`
+- `CONVENTIONS.md`
+
+## 入口层
+
+### `paper-intake-router`
+
+- 作用：识别论文所处阶段、主风险和下一步 Skill 链
+- 何时调用：用户请求模糊、任务跨多个阶段、或需要自动分流
+- 常见后续：`academic-paper-factory`、`paper-positioning`、`reviewer-risk-audit`
+
+## 总控层
+
+### `academic-paper-factory`
+
+- 作用：统筹从 idea 到 submission-ready 的完整推进流程
+- 何时调用：从零开始写论文，或需要把多个写作子任务组织成稳定流程
+- 常见后续：`paper-positioning`、`literature-survey-builder`、`claim-evidence-mapper`
+
+## 核心执行层
+
+### `paper-positioning`
+
+- 作用：澄清问题定义、差异点、最小贡献集和不能乱说的边界
+- 何时调用：选题、定题、标题摘要反复改但贡献仍不清
+- 常见后续：`literature-survey-builder`、`claim-evidence-mapper`
+
+### `literature-survey-builder`
+
+- 作用：系统整理文献矩阵、主题分组、差异表和 novelty gap
+- 何时调用：需要补 related work、比较近两年工作、建立综述视图
+- 常见后续：`paper-positioning`、`citation-reality-guard`
+
+### `claim-evidence-mapper`
+
+- 作用：把 claims 显式映射到 theorem、experiment、figure、table、citation
+- 何时调用：担心 abstract / intro / conclusion 写大了，或要做 claim-evidence matrix
+- 常见后续：`experiment-story-builder`、`proof-consistency-checker`、`reviewer-risk-audit`
+
+### `citation-reality-guard`
+
+- 作用：核验引用真实存在、元数据正确、正文描述准确
+- 何时调用：补参考文献、检查幻觉引用、准备投稿前事实核查
+- 常见后续：`reviewer-risk-audit`、`latex-submission-packager`
+
+### `experiment-story-builder`
+
+- 作用：组织实验叙事、图表角色、baseline、ablation、caption 和统计信息
+- 何时调用：实验很多但不知道怎么讲，或实验节说服力不够
+- 常见后续：`submission-integrity-audit`、`claim-evidence-mapper`
+
+### `latex-first-compile-bootstrap`
+
+- 作用：解决论文项目初次编译、依赖缺失和最小可编译版本问题
+- 何时调用：新接手 LaTeX 项目，或还没法稳定编译 PDF
+- 常见后续：`latex-submission-packager`
+
+### `proof-consistency-checker`
+
+- 作用：检查 theorem、assumption、proof、appendix 之间的一致性
+- 何时调用：理论口径不稳、证明有跳步、附录与主文不一致
+- 常见后续：`claim-evidence-mapper`、`reviewer-risk-audit`
+
+### `writing-naturalness-guard`
+
+- 作用：降低模板化和 AI 味，提升研究者写作风格的自然性
+- 何时调用：用户明确要求 humanize，或稿件读起来过于规整
+- 常见后续：`paper-ratchet-optimizer`
+
+### `reviewer-risk-audit`
+
+- 作用：从审稿人视角审计 novelty、evidence、theory、experiment、presentation 风险
+- 何时调用：用户说“review 一下”“投稿前找硬伤”
+- 常见后续：`paper-ratchet-optimizer`、`submission-integrity-audit`
+
+### `paper-ratchet-optimizer`
+
+- 作用：按棘轮式迭代原则，只修高杠杆问题并保留可验证改进
+- 何时调用：中后期精修、摘要引言结论打磨、反复修改后需要控回归
+- 常见后续：`reviewer-risk-audit`、`writing-naturalness-guard`
+
+### `venue-fit-selector`
+
+- 作用：在多个会议/期刊之间比较 fit、成熟度、改投成本和风险
+- 何时调用：还没定 venue、想比较会议与期刊路线、或准备转投
+- 常见后续：`venue-submission-adapter`、`submission-integrity-audit`
+
+### `submission-integrity-audit`
+
+- 作用：联合审计图表出版质量、caption、一致性与 disclosure/checklist
+- 何时调用：临近投稿，担心图表质量、声明、supplementary 或提交材料不一致
+- 常见后续：`latex-submission-packager`
+
+### `latex-submission-packager`
+
+- 作用：检查编译、匿名性、文件完整性和最终 submission package
+- 何时调用：准备正式投稿、需要确认可交付的 LaTeX 输出
+- 常见后续：`venue-submission-adapter`
+
+### `venue-submission-adapter`
+
+- 作用：把稿件适配到某个已明确 venue 的页数、格式、平台和匿名要求
+- 何时调用：目标会议/期刊已知，需要 venue-specific 改造
+- 常见后续：`latex-submission-packager`
+
+## 投稿后阶段
+
+### `rebuttal-response-drafter`
+
+- 作用：拆解 reviewer comments、制定回应策略并起草 rebuttal / response letter
+- 何时调用：已经收到审稿意见
+- 常见前置：`reviewer-risk-audit`
+
+## 快速选择
+
+- 需求模糊：`paper-intake-router`
+- 从零起稿：`academic-paper-factory`
+- 定位不清：`paper-positioning`
+- 文献综述：`literature-survey-builder`
+- claim 过大：`claim-evidence-mapper`
+- 引用核验：`citation-reality-guard`
+- 实验叙事：`experiment-story-builder`
+- 理论核查：`proof-consistency-checker`
+- 去 AI 味：`writing-naturalness-guard`
+- 审稿前找硬伤：`reviewer-risk-audit`
+- 选投哪里：`venue-fit-selector`
+- 投稿一致性审计：`submission-integrity-audit`
+- 最终打包：`latex-submission-packager`
+- venue 格式适配：`venue-submission-adapter`
+- rebuttal：`rebuttal-response-drafter`
