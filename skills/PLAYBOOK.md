@@ -2,6 +2,8 @@
 
 这是一套可跨 AI 会议与期刊复用的论文 Skills Playbook。目标不是为某一个 venue 临时拼一套工具，而是形成一组稳定的“核心能力层 + venue 适配层 + 项目覆盖层”。
 
+如果你只想快速决定“该用哪个 Skill”，先看 `INDEX.md`；如果你要理解整套体系的分层、canonical set 和推荐链路，再看本文件。
+
 这份 Playbook 现在吸收了两组来源：
 
 - 当前 `.trae/skills` 中已经比较稳定的路由、总控与论文子任务 Skills
@@ -163,6 +165,10 @@
 - `标准交付`
 - `Examples`
 - 与其他 Skills 的 handoff 关系
+
+快速索引入口：
+
+- `INDEX.md`
 
 ## 设计原则
 

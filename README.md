@@ -36,6 +36,8 @@ skills/
 
 ## 核心文档
 
+- `skills/INDEX.md`
+  按“做什么 / 何时调用 / 常见后续”快速总览全部 Skills
 - `skills/PLAYBOOK.md`
   说明整套 Skills 的分层、推荐链路与 canonical set
 - `skills/CONVENTIONS.md`
@@ -146,5 +148,6 @@ skills/
 
 详细规范见：
 
+- `skills/INDEX.md`
 - `skills/PLAYBOOK.md`
 - `skills/CONVENTIONS.md`

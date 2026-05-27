@@ -1,6 +1,6 @@
 ---
 name: "reviewer-risk-audit"
-description: "从严苛审稿人视角审计新颖性、证据、写作、格式与投稿风险。Invoke when 草稿成形后、重大修改后、或投稿前终审。"
+description: "从严苛审稿人视角审计新颖性、证据、写作、格式与投稿风险。Invoke when 用户要做审稿视角检查、重大修改后复审、或投稿前终审。"
 ---
 
 # Reviewer Risk Audit

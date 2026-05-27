@@ -1,6 +1,6 @@
 ---
 name: "writing-naturalness-guard"
-description: "识别并消除学术稿件中的 AI 写作痕迹，同时保持技术含义不变。Invoke when 用户要去AI味、润色摘要/引言、或降低语言模板感。"
+description: "识别并消除学术稿件中的 AI 写作痕迹，同时保持技术含义不变。Invoke when 用户要去 AI 味、润色摘要/引言、或降低语言模板感。"
 ---
 
 # Writing Naturalness Guard
