@@ -25,12 +25,15 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `academic-paper-factory`
 - `paper-positioning`
+- `claim-evidence-mapper`
 - `citation-reality-guard`
 - `experiment-story-builder`
 - `proof-consistency-checker`
 - `writing-naturalness-guard`
 - `reviewer-risk-audit`
 - `paper-ratchet-optimizer`
+- `venue-fit-selector`
+- `submission-integrity-audit`
 - `latex-submission-packager`
 - `venue-submission-adapter`
 - `literature-survey-builder`
@@ -60,6 +63,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 默认路由：
 
 - 主 Skill: `paper-positioning`
+
+若用户已经开始问“投哪个 venue 更合适”，追加：
+
+- `venue-fit-selector`
 
 ### Stage B: 起稿阶段
 
@@ -103,6 +110,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 主 Skill: `experiment-story-builder`
 
+若重点是图表出版质量、caption 独立可读性或表格可投稿性，追加：
+
+- `submission-integrity-audit`
+
 ### Stage E: 中后期优化阶段
 
 信号：
@@ -140,6 +151,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 主 Skill: `reviewer-risk-audit`
 
+若用户要显式检查“每个 claim 是否都被支撑”，追加：
+
+- `claim-evidence-mapper`
+
 ### Stage G: 投稿封包阶段
 
 信号：
@@ -153,6 +168,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 主 Skill: `latex-submission-packager`
 
+若用户同时担心 checklist、ethics、code/data availability 或 figures/tables 的提交质量，追加：
+
+- `submission-integrity-audit`
+
 ### Stage G2: venue / 平台适配阶段
 
 信号：
@@ -164,7 +183,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 默认路由：
 
-- 主 Skill: `venue-submission-adapter`
+- 若用户还没定 venue 或在多个候选间比较：`venue-fit-selector`
+- 若用户已明确目标 venue：`venue-submission-adapter`
 
 ### Stage H: 审稿回应阶段
 
@@ -229,6 +249,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `proof-consistency-checker`
 
+### 风险 3.8：claim 与证据错位
+
+信号：
+
+- abstract / intro / conclusion 的表述比正文更强
+- contribution bullets 说得很满，但找不到对应 theorem / figure / table / citation
+- 用户明确要求“做 claim-evidence matrix”
+
+追加：
+
+- `claim-evidence-mapper`
+
 ### 风险 4：强表述过头
 
 信号：
@@ -251,6 +283,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 追加：
 
 - `latex-submission-packager`
+- 必要时追加 `submission-integrity-audit`
 
 ### 风险 6：AI 写作风格检测风险
 
@@ -278,6 +311,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 追加：
 
 - `literature-survey-builder`
+
+### 风险 7.5：venue 选择失配风险
+
+信号：
+
+- 不确定该投会议还是期刊
+- 在多个 venue 之间摇摆
+- 被拒后想找转投路线
+
+追加：
+
+- `venue-fit-selector`
 
 ### 风险 8：审稿回应风险
 
@@ -328,15 +373,15 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 ### 从 idea 到投稿
 
-`paper-positioning -> literature-survey-builder -> academic-paper-factory -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> paper-ratchet-optimizer -> latex-submission-packager`
+`paper-positioning -> literature-survey-builder -> academic-paper-factory -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
 
 ### 中途接手一篇已有草稿
 
-`paper-intake-router -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer`
+`paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer`
 
 ### 投稿前最后 48 小时
 
-`paper-intake-router -> reviewer-risk-audit -> citation-reality-guard -> latex-submission-packager`
+`paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> submission-integrity-audit -> latex-submission-packager`
 
 ### 投稿后审稿回应
 

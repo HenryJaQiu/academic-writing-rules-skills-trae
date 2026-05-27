@@ -6,9 +6,14 @@
 
 Skill 与规则默认分三层：
 
-- `通用核心层`：适用于大多数学术期刊/会议，例如定位、文献、实验、审稿风险、语言自然化、证明核查
+- `通用核心层`：适用于大多数学术期刊/会议，例如定位、文献、claim-evidence mapping、实验、审稿风险、语言自然化、证明核查
 - `venue 适配层`：只负责会议/期刊特定要求，例如页数、投稿平台字段、匿名性、模板顺序
 - `项目覆盖层`：只负责当前项目特有的图号映射、实验脚本关系、项目节奏与局部纪律
+
+新增约定：
+
+- `venue-fit-selector` 属于“投稿决策层”，位于通用核心层与 venue 适配层之间，先判断“投哪里合适”，再进入具体 venue 适配
+- `submission-integrity-audit` 负责图表出版质量与 disclosure 一致性，默认不承担编译、打包和模板修复
 
 约束：
 
@@ -18,7 +23,8 @@ Skill 与规则默认分三层：
 
 ## 目录约定
 
-- 每个 Skill 独立放在 `.trae/skills/<skill-name>/`
+- 当前规则仓库中，每个 Skill 独立放在 `skills/<skill-name>/`
+- 当把 Skill 安装到具体项目工作区时，对应落在 `.trae/skills/<skill-name>/`
 - 每个 Skill 至少包含一个 `SKILL.md`
 - `skill-name` 使用小写加连字符，例如 `paper-intake-router`
 
@@ -70,9 +76,12 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 模糊请求优先进入 `paper-intake-router`
 - 多 Skill 任务优先由 `academic-paper-factory` 编排
 - 专用 Skill 尽量解决一个核心问题，不承担统一入口职责
+- 用户明确说“每个 claim 有没有证据支撑 / abstract 句子是否被正文承接”时，优先进入 `claim-evidence-mapper`
 - 用户明确说“去 AI 味 / humanize”时，优先进入 `writing-naturalness-guard`
 - 用户明确说“检查证明 / 补推导 / theorem 不一致”时，优先进入 `proof-consistency-checker`
+- 用户明确说“投哪个 venue 更合适 / 期刊还是会议更稳 / 转投去哪”时，优先进入 `venue-fit-selector`
 - 用户明确说“切换 venue / 准备投稿系统字段 / 改成某会议或期刊格式”时，优先进入 `venue-submission-adapter`
+- 用户明确说“检查 figures / tables / checklist / ethics / code availability / disclosure 一致性”时，优先进入 `submission-integrity-audit`
 
 ## 输出约定
 
@@ -91,3 +100,4 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 更新 Skill 后要检查诊断与结构一致性
 - 任何牵涉图表、公式、引用、投稿格式的 Skill，都应明确“修改后如何验证”
 - 如果 Skill 建议调大图内字体、移动 legend、改页数或移动正文内容，必须同步要求检查导出 PDF 与编译后的最终论文 PDF
+- 任何牵涉 disclosure、checklist、code/data availability 的 Skill，都必须要求区分“已提供”“将提供”“不可提供”三种状态，禁止模糊承诺

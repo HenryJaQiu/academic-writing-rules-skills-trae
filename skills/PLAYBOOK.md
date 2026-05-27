@@ -25,6 +25,7 @@
 
 - `paper-positioning`
 - `literature-survey-builder`
+- `claim-evidence-mapper`
 - `citation-reality-guard`
 - `experiment-story-builder`
 - `latex-first-compile-bootstrap`
@@ -32,6 +33,8 @@
 - `writing-naturalness-guard`
 - `reviewer-risk-audit`
 - `paper-ratchet-optimizer`
+- `venue-fit-selector`
+- `submission-integrity-audit`
 - `latex-submission-packager`
 - `venue-submission-adapter`
 
@@ -47,18 +50,30 @@
 2. `academic-paper-factory`
 3. `paper-positioning`
 4. `literature-survey-builder`
-5. `citation-reality-guard`
-6. `experiment-story-builder`
-7. `latex-first-compile-bootstrap`
-8. `proof-consistency-checker`
-9. `writing-naturalness-guard`
-10. `reviewer-risk-audit`
-11. `paper-ratchet-optimizer`
-12. `latex-submission-packager`
-13. `venue-submission-adapter`
-14. `rebuttal-response-drafter`
+5. `claim-evidence-mapper`
+6. `citation-reality-guard`
+7. `experiment-story-builder`
+8. `latex-first-compile-bootstrap`
+9. `proof-consistency-checker`
+10. `writing-naturalness-guard`
+11. `reviewer-risk-audit`
+12. `paper-ratchet-optimizer`
+13. `venue-fit-selector`
+14. `submission-integrity-audit`
+15. `latex-submission-packager`
+16. `venue-submission-adapter`
+17. `rebuttal-response-drafter`
 
-这 14 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview 或某个单一论文类型上。
+这 17 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview 或某个单一论文类型上。
+
+其中三类新增能力分别对应三批高频缺口：
+
+- `claim-evidence-mapper`
+  作用：把摘要、引言、结论、定理、图表中的 claims 显式映射到证据，防止“主张大于证据”
+- `venue-fit-selector`
+  作用：在“先写什么”和“按哪个 venue 格式改”之间，补上“到底投哪里更合适”的决策层
+- `submission-integrity-audit`
+  作用：合并图表出版级审计与 disclosure / checklist / supplementary 一致性审计，避免继续拆出多个高重叠目录
 
 ## 外部 Skills 的整理结论
 
@@ -104,31 +119,31 @@
 
 推荐链路：
 
-`paper-intake-router -> academic-paper-factory -> paper-positioning -> literature-survey-builder -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> latex-submission-packager`
+`paper-intake-router -> academic-paper-factory -> paper-positioning -> literature-survey-builder -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
 
 ### 理论型或理论+方法型论文
 
 推荐链路：
 
-`paper-intake-router -> academic-paper-factory -> paper-positioning -> proof-consistency-checker -> citation-reality-guard -> reviewer-risk-audit`
+`paper-intake-router -> academic-paper-factory -> paper-positioning -> claim-evidence-mapper -> proof-consistency-checker -> citation-reality-guard -> reviewer-risk-audit`
 
 ### 中后期打磨
 
 推荐链路：
 
-`paper-intake-router -> academic-paper-factory -> paper-ratchet-optimizer -> writing-naturalness-guard -> citation-reality-guard -> reviewer-risk-audit`
+`paper-intake-router -> academic-paper-factory -> claim-evidence-mapper -> paper-ratchet-optimizer -> writing-naturalness-guard -> citation-reality-guard -> reviewer-risk-audit`
 
 ### venue 切换或投稿适配
 
 推荐链路：
 
-`paper-intake-router -> venue-submission-adapter -> latex-submission-packager`
+`paper-intake-router -> venue-fit-selector -> venue-submission-adapter -> submission-integrity-audit -> latex-submission-packager`
 
 ### 投稿前终审
 
 推荐链路：
 
-`paper-intake-router -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer -> latex-submission-packager`
+`paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> submission-integrity-audit -> latex-submission-packager`
 
 ### 投稿后回应
 
@@ -154,14 +169,16 @@
 1. 路由优先，避免一上来就盲改稿件
 2. 先区分通用能力、venue 适配和项目局部规则，再落地执行
 3. 强主张必须有证据闭环
-4. 所有引用必须真实存在且元数据准确
-5. 每轮优化只保留可验证提升，避免越改越乱
-6. 不把 NeurIPS、OpenReview、单一模板要求硬编码进所有 Skill
+4. 先做 venue fit 选择，再做 venue-specific 适配
+5. 所有引用必须真实存在且元数据准确
+6. 每轮优化只保留可验证提升，避免越改越乱
+7. 不把 NeurIPS、OpenReview、单一模板要求硬编码进所有 Skill
 
 ## 维护建议
 
 - 新增 Skill 时，先判断它是“核心能力”还是“venue/project 适配”
 - 不要创建和现有 Skill 高度重叠的新 Skill
+- 如果两个候选 Skill 共享同一输入材料、同一交付对象且主要服务同一阶段，优先合并而不是拆目录
 - 如果只是补 venue 规则，优先更新 `venue-submission-adapter` 或规则文件，而不是复制一份新的 conference-specific Skill
 - 如果只是补写作策略，优先增强现有 Skill，而不是新增冗余目录
 - 每次新增或大改 Skill 后，都检查 description、示例、输入/交付协议、handoff 关系是否清晰
