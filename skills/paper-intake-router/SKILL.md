@@ -25,6 +25,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `academic-paper-factory`
 - `paper-positioning`
+- `literature-survey-builder`
 - `claim-evidence-mapper`
 - `citation-reality-guard`
 - `experiment-story-builder`
@@ -36,7 +37,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - `submission-integrity-audit`
 - `latex-submission-packager`
 - `venue-submission-adapter`
-- `literature-survey-builder`
 - `rebuttal-response-drafter`
 
 ## 输入信号
@@ -49,8 +49,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 当前风险：新颖性、证据不足、实验叙事混乱、引用真实性、格式与匿名性
 
 ## Step 1: 判断任务阶段
-
-将请求映射到以下阶段之一：
 
 ### Stage A: 想法阶段
 
@@ -201,8 +199,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 ## Step 2: 判断主风险
 
-在确定阶段后，再识别当前最高风险，并决定是否追加辅助 Skill。
-
 ### 风险 1：定位不清
 
 信号：
@@ -290,15 +286,15 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 信号：
 
 - 稿件读起来句子结构过于规整，每段模式雷同
-- 大量使用 "Furthermore / Moreover / Additionally / Notably" 等过渡词
+- 大量使用 `Furthermore / Moreover / Additionally / Notably` 等过渡词
 - Abstract 或 Conclusion 具有明显的模板化三段结构
 - 所有段落的长度和复杂度高度均匀
-- 用户或合作者反馈"读起来像 AI 写的"
+- 用户或合作者反馈“读起来像 AI 写的”
 
 追加：
 
 - `writing-naturalness-guard`
-- 必要时再加 `paper-ratchet-optimizer`（以语言风格自然化为本轮优化目标）
+- 必要时再加 `paper-ratchet-optimizer`
 
 ### 风险 7：文献覆盖与新颖性风险
 
@@ -336,39 +332,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `rebuttal-response-drafter`
 
-## Step 3: 生成路由决策
-
-默认只给出一种主执行路线，避免同时并发太多方向。
-
-### 单 Skill 路由
-
-适合：
-
-- 用户意图单一
-- 当前瓶颈很明确
-
-输出格式：
-
-- `判定阶段`
-- `主风险`
-- `推荐主 Skill`
-- `为什么先做这个`
-
-### Skill 链路由
-
-适合：
-
-- 用户请求跨多个阶段
-- 当前问题必须按顺序拆开处理
-
-输出格式：
-
-- `判定阶段`
-- `主风险`
-- `执行链`
-- `每一步目标`
-- `为什么这个顺序最稳`
-
 ## 默认链路模板
 
 ### 从 idea 到投稿
@@ -393,13 +356,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 若 deadline 很近，优先 `latex-submission-packager` 和 `reviewer-risk-audit`
 - 若草稿还不成形，不要过早进入 submission packaging
 - 若引用真实性未确认，不要先做 related work 的强结论润色
-
-## 禁忌
-
-- 不要把所有 Skill 都一次性调起
-- 不要把“模糊需求”直接当成“需要润色”
-- 不要在未识别阶段前直接改稿
-- 不要忽略用户的 venue、deadline、双盲和是否已有 `.tex/.bib`
 
 ## 默认输出模板
 
