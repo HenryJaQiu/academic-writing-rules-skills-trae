@@ -25,15 +25,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `academic-paper-factory`
 - `paper-positioning`
+- `literature-survey-builder`
+- `claim-evidence-mapper`
 - `citation-reality-guard`
 - `experiment-story-builder`
 - `proof-consistency-checker`
 - `writing-naturalness-guard`
 - `reviewer-risk-audit`
 - `paper-ratchet-optimizer`
+- `venue-fit-selector`
+- `submission-integrity-audit`
 - `latex-submission-packager`
 - `venue-submission-adapter`
-- `literature-survey-builder`
 - `rebuttal-response-drafter`
 
 ## 输入信号
@@ -47,8 +50,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 ## Step 1: 判断任务阶段
 
-将请求映射到以下阶段之一：
-
 ### Stage A: 想法阶段
 
 信号：
@@ -60,6 +61,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 默认路由：
 
 - 主 Skill: `paper-positioning`
+
+若用户已经开始问“投哪个 venue 更合适”，追加：
+
+- `venue-fit-selector`
 
 ### Stage B: 起稿阶段
 
@@ -103,6 +108,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 主 Skill: `experiment-story-builder`
 
+若重点是图表出版质量、caption 独立可读性或表格可投稿性，追加：
+
+- `submission-integrity-audit`
+
 ### Stage E: 中后期优化阶段
 
 信号：
@@ -140,6 +149,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 主 Skill: `reviewer-risk-audit`
 
+若用户要显式检查“每个 claim 是否都被支撑”，追加：
+
+- `claim-evidence-mapper`
+
 ### Stage G: 投稿封包阶段
 
 信号：
@@ -153,6 +166,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 主 Skill: `latex-submission-packager`
 
+若用户同时担心 checklist、ethics、code/data availability 或 figures/tables 的提交质量，追加：
+
+- `submission-integrity-audit`
+
 ### Stage G2: venue / 平台适配阶段
 
 信号：
@@ -164,7 +181,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 默认路由：
 
-- 主 Skill: `venue-submission-adapter`
+- 若用户还没定 venue 或在多个候选间比较：`venue-fit-selector`
+- 若用户已明确目标 venue：`venue-submission-adapter`
 
 ### Stage H: 审稿回应阶段
 
@@ -180,8 +198,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 主 Skill: `rebuttal-response-drafter`
 
 ## Step 2: 判断主风险
-
-在确定阶段后，再识别当前最高风险，并决定是否追加辅助 Skill。
 
 ### 风险 1：定位不清
 
@@ -229,6 +245,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `proof-consistency-checker`
 
+### 风险 3.8：claim 与证据错位
+
+信号：
+
+- abstract / intro / conclusion 的表述比正文更强
+- contribution bullets 说得很满，但找不到对应 theorem / figure / table / citation
+- 用户明确要求“做 claim-evidence matrix”
+
+追加：
+
+- `claim-evidence-mapper`
+
 ### 风险 4：强表述过头
 
 信号：
@@ -251,21 +279,22 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 追加：
 
 - `latex-submission-packager`
+- 必要时追加 `submission-integrity-audit`
 
 ### 风险 6：AI 写作风格检测风险
 
 信号：
 
 - 稿件读起来句子结构过于规整，每段模式雷同
-- 大量使用 "Furthermore / Moreover / Additionally / Notably" 等过渡词
+- 大量使用 `Furthermore / Moreover / Additionally / Notably` 等过渡词
 - Abstract 或 Conclusion 具有明显的模板化三段结构
 - 所有段落的长度和复杂度高度均匀
-- 用户或合作者反馈"读起来像 AI 写的"
+- 用户或合作者反馈“读起来像 AI 写的”
 
 追加：
 
 - `writing-naturalness-guard`
-- 必要时再加 `paper-ratchet-optimizer`（以语言风格自然化为本轮优化目标）
+- 必要时再加 `paper-ratchet-optimizer`
 
 ### 风险 7：文献覆盖与新颖性风险
 
@@ -279,6 +308,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `literature-survey-builder`
 
+### 风险 7.5：venue 选择失配风险
+
+信号：
+
+- 不确定该投会议还是期刊
+- 在多个 venue 之间摇摆
+- 被拒后想找转投路线
+
+追加：
+
+- `venue-fit-selector`
+
 ### 风险 8：审稿回应风险
 
 信号：
@@ -291,52 +332,19 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - `rebuttal-response-drafter`
 
-## Step 3: 生成路由决策
-
-默认只给出一种主执行路线，避免同时并发太多方向。
-
-### 单 Skill 路由
-
-适合：
-
-- 用户意图单一
-- 当前瓶颈很明确
-
-输出格式：
-
-- `判定阶段`
-- `主风险`
-- `推荐主 Skill`
-- `为什么先做这个`
-
-### Skill 链路由
-
-适合：
-
-- 用户请求跨多个阶段
-- 当前问题必须按顺序拆开处理
-
-输出格式：
-
-- `判定阶段`
-- `主风险`
-- `执行链`
-- `每一步目标`
-- `为什么这个顺序最稳`
-
 ## 默认链路模板
 
 ### 从 idea 到投稿
 
-`paper-positioning -> literature-survey-builder -> academic-paper-factory -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> paper-ratchet-optimizer -> latex-submission-packager`
+`paper-positioning -> literature-survey-builder -> academic-paper-factory -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
 
 ### 中途接手一篇已有草稿
 
-`paper-intake-router -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer`
+`paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer`
 
 ### 投稿前最后 48 小时
 
-`paper-intake-router -> reviewer-risk-audit -> citation-reality-guard -> latex-submission-packager`
+`paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> submission-integrity-audit -> latex-submission-packager`
 
 ### 投稿后审稿回应
 
@@ -348,13 +356,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 若 deadline 很近，优先 `latex-submission-packager` 和 `reviewer-risk-audit`
 - 若草稿还不成形，不要过早进入 submission packaging
 - 若引用真实性未确认，不要先做 related work 的强结论润色
-
-## 禁忌
-
-- 不要把所有 Skill 都一次性调起
-- 不要把“模糊需求”直接当成“需要润色”
-- 不要在未识别阶段前直接改稿
-- 不要忽略用户的 venue、deadline、双盲和是否已有 `.tex/.bib`
 
 ## 默认输出模板
 
