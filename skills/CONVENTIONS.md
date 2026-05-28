@@ -77,6 +77,8 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 多 Skill 任务优先由 `academic-paper-factory` 编排
 - 专用 Skill 尽量解决一个核心问题，不承担统一入口职责
 - 用户明确说“每个 claim 有没有证据支撑 / abstract 句子是否被正文承接”时，优先进入 `claim-evidence-mapper`
+- 用户明确说“只根据我给你的论文回答 / 先核查这些论文到底说了什么”时，优先进入 `grounded-paper-qa`
+- 用户明确说“我已经有很多读书笔记 / 高亮 / 摘录，帮我整理成写作素材”时，优先进入 `reading-note-synthesizer`
 - 用户明确说“去 AI 味 / humanize”时，优先进入 `writing-naturalness-guard`
 - 对“去 AI 味”的默认理解应包含三联任务：文字自然化、提示语/元编辑残留检查、幻觉引用与明显合规风险初筛
 - 用户明确说“检查证明 / 补推导 / theorem 不一致”时，优先进入 `proof-consistency-checker`
@@ -103,3 +105,10 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 如果 Skill 建议调大图内字体、移动 legend、改页数或移动正文内容，必须同步要求检查导出 PDF 与编译后的最终论文 PDF
 - 任何牵涉 disclosure、checklist、code/data availability 的 Skill，都必须要求区分“已提供”“将提供”“不可提供”三种状态，禁止模糊承诺
 - 任何以“去 AI 味”为目标的 Skill，都不得只做文风润色；必须同时检查提示语残留、元编辑残留，以及是否存在需转交 `citation-reality-guard` 的幻觉引用风险
+- 任何以论文问答、读书笔记整理或系统综述为目标的 Skill，都必须区分“原文事实”“个人判断”“待核验项”，禁止把二手笔记直接写成确定结论
+
+## 演化约定
+
+- 增强现有 Skill 时，优先补 `风险门禁`、`默认保守策略`、`标准输入/交付`、`可直接复用的输出模板`
+- 若一轮更新只改变措辞，但没有让路由更清楚、输出更可复用、风险更可控，通常不值得保留
+- 每次新增或增强 Skill 后，都应检查是否需要同步 `INDEX.md`、`PLAYBOOK.md`、`README.md`

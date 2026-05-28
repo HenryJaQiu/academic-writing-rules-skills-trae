@@ -53,6 +53,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 信号：补 related work、补引用、核 bib、系统看近年工作
 - 主 Skill：
+- 若偏指定论文问答、事实核查、只基于给定材料回答：`grounded-paper-qa`
+- 若偏把读书笔记、摘录、批注整理成写作素材：`reading-note-synthesizer`
 - 若偏文献矩阵与差异分析：`literature-survey-builder`
 - 若偏真实性核验与元数据修正：`citation-reality-guard`
 
@@ -104,6 +106,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 定位不清：`paper-positioning`
 - 引用或事实风险：`citation-reality-guard`
+- 指定论文问答或事实核查：`grounded-paper-qa`
+- 笔记散乱但已有大量阅读资产：`reading-note-synthesizer`
 - 实验证据链不足：`experiment-story-builder`
 - 理论口径不稳：`proof-consistency-checker`
 - claim 大于证据：`claim-evidence-mapper`
@@ -122,6 +126,14 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 ### 中途接手一篇已有草稿
 
 `paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer`
+
+### 先基于一组论文问清事实，再进入写作
+
+`paper-intake-router -> grounded-paper-qa -> literature-survey-builder -> paper-positioning`
+
+### 已有很多读书笔记，但还没变成论文素材
+
+`paper-intake-router -> reading-note-synthesizer -> literature-survey-builder -> claim-evidence-mapper`
 
 ### 去 AI 味但要同时查残留与幻觉问题
 

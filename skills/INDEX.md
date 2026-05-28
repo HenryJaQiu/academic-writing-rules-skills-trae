@@ -37,9 +37,21 @@
 
 ### `literature-survey-builder`
 
-- 作用：系统整理文献矩阵、主题分组、差异表和 novelty gap
-- 何时调用：需要补 related work、比较近两年工作、建立综述视图
+- 作用：系统整理文献地图、差异表、coverage 说明和 related work 资产
+- 何时调用：需要补 related work、比较近两年工作、建立综述视图，或做更严格的 systematic-review 模式
 - 常见后续：`paper-positioning`、`citation-reality-guard`
+
+### `grounded-paper-qa`
+
+- 作用：只基于指定论文、摘录和笔记做带出处问答与事实核查
+- 何时调用：用户要“只根据这些论文回答”，或先问清文献再写作
+- 常见后续：`literature-survey-builder`、`claim-evidence-mapper`
+
+### `reading-note-synthesizer`
+
+- 作用：把读书笔记、高亮、摘录和会议记录整理成结构化写作资产
+- 何时调用：用户已有很多阅读材料，但还没有形成 related work、定位或 rebuttal 素材
+- 常见后续：`literature-survey-builder`、`paper-positioning`
 
 ### `claim-evidence-mapper`
 
@@ -127,6 +139,8 @@
 - 从零起稿：`academic-paper-factory`
 - 定位不清：`paper-positioning`
 - 文献综述：`literature-survey-builder`
+- 指定论文问答：`grounded-paper-qa`
+- 读书笔记整理：`reading-note-synthesizer`
 - claim 过大：`claim-evidence-mapper`
 - 引用核验：`citation-reality-guard`
 - 实验叙事：`experiment-story-builder`

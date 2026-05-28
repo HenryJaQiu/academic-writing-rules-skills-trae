@@ -27,6 +27,8 @@
 
 - `paper-positioning`
 - `literature-survey-builder`
+- `grounded-paper-qa`
+- `reading-note-synthesizer`
 - `claim-evidence-mapper`
 - `citation-reality-guard`
 - `experiment-story-builder`
@@ -52,21 +54,23 @@
 2. `academic-paper-factory`
 3. `paper-positioning`
 4. `literature-survey-builder`
-5. `claim-evidence-mapper`
-6. `citation-reality-guard`
-7. `experiment-story-builder`
-8. `latex-first-compile-bootstrap`
-9. `proof-consistency-checker`
-10. `writing-naturalness-guard`
-11. `reviewer-risk-audit`
-12. `paper-ratchet-optimizer`
-13. `venue-fit-selector`
-14. `submission-integrity-audit`
-15. `latex-submission-packager`
-16. `venue-submission-adapter`
-17. `rebuttal-response-drafter`
+5. `grounded-paper-qa`
+6. `reading-note-synthesizer`
+7. `claim-evidence-mapper`
+8. `citation-reality-guard`
+9. `experiment-story-builder`
+10. `latex-first-compile-bootstrap`
+11. `proof-consistency-checker`
+12. `writing-naturalness-guard`
+13. `reviewer-risk-audit`
+14. `paper-ratchet-optimizer`
+15. `venue-fit-selector`
+16. `submission-integrity-audit`
+17. `latex-submission-packager`
+18. `venue-submission-adapter`
+19. `rebuttal-response-drafter`
 
-这 17 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview 或某个单一论文类型上。
+这 19 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview、Zotero 或某个单一论文类型上。
 
 其中三类新增能力分别对应三批高频缺口：
 
@@ -77,6 +81,13 @@
 - `submission-integrity-audit`
   作用：合并图表出版级审计与 disclosure / checklist / supplementary 一致性审计，避免继续拆出多个高重叠目录
 
+这轮继续补了两类近期社区中更热门、但此前本库较弱的中层能力：
+
+- `grounded-paper-qa`
+  作用：把“根据这些论文回答问题”和“先核清事实再写作”独立出来，强调回答必须回到给定材料
+- `reading-note-synthesizer`
+  作用：把阅读笔记、摘录和批注转成 related work、定位、rebuttal 可直接复用的结构化资产
+
 ## 外部 Skills 的整理结论
 
 ### 建议吸收为通用能力
@@ -84,6 +95,9 @@
 - `deai` -> 吸收为 `writing-naturalness-guard`
 - `theory` -> 吸收为 `proof-consistency-checker`
 - `nips` + `openreview` -> 抽象为 `venue-submission-adapter`
+- `lit-review mode` + `systematic-review mode` -> 增强为 `literature-survey-builder`
+- `fact-check mode` + citation-backed answer pattern -> 抽象为 `grounded-paper-qa`
+- notes-to-writing workflow -> 抽象为 `reading-note-synthesizer`
 
 其中 `writing-naturalness-guard` 不再只是语言自然化器，而是“自然化 + 风险门禁”组件：
 
@@ -128,6 +142,14 @@
 推荐链路：
 
 `paper-intake-router -> academic-paper-factory -> paper-positioning -> literature-survey-builder -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
+
+若前期有大量指定论文需要先问清事实，可插入：
+
+`paper-intake-router -> grounded-paper-qa -> literature-survey-builder`
+
+若前期已有大量读书笔记和摘录，可插入：
+
+`paper-intake-router -> reading-note-synthesizer -> literature-survey-builder`
 
 ### 理论型或理论+方法型论文
 
