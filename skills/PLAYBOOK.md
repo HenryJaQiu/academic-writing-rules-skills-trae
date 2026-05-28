@@ -151,6 +151,14 @@
 
 `paper-intake-router -> reading-note-synthesizer -> literature-survey-builder`
 
+投稿前审核与优化阶段，推荐显式走一个闭环：
+
+`reviewer-risk-audit -> paper-ratchet-optimizer -> reviewer-risk-audit`
+
+第一轮审计负责给出 findings、score、confidence 和 `GO / CONDITIONAL GO / NO-GO`；
+中间一轮由 `paper-ratchet-optimizer` 读取 `Findings + Scorecard + Decision`，只修一个最高杠杆问题；
+最后一轮复审确认 score 是否真的改善、是否仍有 `P0/P1` 未关闭。
+
 ### 理论型或理论+方法型论文
 
 推荐链路：

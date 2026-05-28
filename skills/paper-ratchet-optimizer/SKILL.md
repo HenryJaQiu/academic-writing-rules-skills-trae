@@ -1,11 +1,20 @@
 ---
 name: "paper-ratchet-optimizer"
-description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化论文质量。Invoke when 用户要持续打磨草稿、比较方案、或降低投稿风险。"
+description: "用棘轮式评估-改进-验证-保留/回滚循环优化论文质量。Invoke when 用户要根据审稿 findings 和 scorecard 持续修稿、控回归、或准备复审。"
 ---
 
 # Paper Ratchet Optimizer
 
 这个 Skill 借鉴 Darwin 风格的 Skill 优化思想，但优化对象从 `SKILL.md` 换成论文草稿、投稿包和相关证据链。目标不是“多改”，而是“只保留可验证的改进”。
+
+它现在默认与 `reviewer-risk-audit` 对齐，优先吃上一轮审计输出：
+
+- `Findings`
+- `Scorecard`
+- `Decision`
+- `Residual Risks`
+
+然后只选择一个最高杠杆问题做最小闭环修复，再决定保留、回滚或进入复审。
 
 ## 何时调用
 
@@ -13,6 +22,9 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 - 用户要连续迭代 abstract / intro / related work / conclusion
 - 用户要比较两个版本哪个更适合投稿
 - 用户要在不引入新风险的前提下提升稿件质量
+- 用户刚做完 `reviewer-risk-audit`，现在要按 findings 修稿
+- 用户要根据 `GO / CONDITIONAL GO / NO-GO` 结果决定先修什么
+- 用户要做重大修改后的“修一轮 -> 复审一轮”闭环
 
 ## 核心机制
 
@@ -24,6 +36,22 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 4. `Keep or Revert`
 
 不要同时大改五个方向，否则无法归因。
+
+## 与 `reviewer-risk-audit` 的契约
+
+默认把上一轮审计结果视为上游输入：
+
+- `Findings`：告诉你先修哪一个问题
+- `Scorecard`：给出当前基线分数
+- `Decision`：告诉你当前版本是 `GO / CONDITIONAL GO / NO-GO`
+- `Residual Risks`：提醒哪些问题即使本轮不修，也不能被忘掉
+
+本 Skill 的作用不是重新做一遍 review，而是：
+
+1. 选一个最值得修的 finding
+2. 设计最短修复路径
+3. 检查改动是否真的改善该 finding
+4. 判断是否值得进入下一轮 `reviewer-risk-audit`
 
 ## 评分维度
 
@@ -40,9 +68,23 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 
 ## 单轮优化流程
 
-### Step 1: 找最低分维度
+### Step 1: 读取上游审计结果并选一个目标
 
-先识别当前最弱项，例如：
+优先从 `reviewer-risk-audit` 中读取：
+
+- 最严重的 `P0/P1`
+- 最低的维度分
+- 当前 `Decision`
+- 仍未关闭的 `Residual Risks`
+
+然后只选一个本轮目标。选择优先级建议：
+
+1. 未关闭的 `P0`
+2. 直接压低 `Decision` 的 `P1`
+3. 拉低最低维度分的系统性问题
+4. 会连带改善多个 section 的结构性问题
+
+常见目标例如：
 
 - Abstract 过大
 - Related Work 太旧
@@ -55,7 +97,20 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 - Notation/Definitions 误嵌入 Introduction 内部
 - checklist / appendix / references 顺序错误
 
-### Step 2: 只改一类问题
+### Step 2: 写出单轮优化假设
+
+在动手前先明确：
+
+- `Target finding`
+- `Current baseline`
+- `Expected improvement`
+- `Do-not-break constraints`
+
+推荐写成一句话：
+
+`如果我们只修 X，并保持 Y 不变，那么最有可能改善 Z 分数/决策，而不会引入新的 A/B/C 风险。`
+
+### Step 3: 只改一类问题
 
 一轮内只处理一个主题，例如：
 
@@ -65,7 +120,9 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 - 只修 submission format
 - 只做语言风格自然化（降低 AI 检测率）
 
-### Step 3: 验证改动是否真改进
+若该问题本质上需要跨 3 个以上模块的大改，说明它不适合当前棘轮轮次，应先拆小。
+
+### Step 4: 验证改动是否真改进
 
 最少检查：
 
@@ -75,17 +132,42 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 - 是否改变了页数、引用、图表边界
 - 是否让表达更准确而不是更花哨
 
-### Step 4: 决策
+若输入来自 `reviewer-risk-audit`，还应显式检查：
+
+- 被选中的 finding 是否已明显缓解
+- 对应最低分维度是否至少有合理的改善预期
+- `Decision` 是否有机会从 `NO-GO -> CONDITIONAL GO` 或 `CONDITIONAL GO -> GO`
+- 是否把其他未修问题掩盖掉了，而不是解决掉了
+
+### Step 5: 评估是否需要立即复审
+
+以下情况建议立刻回到 `reviewer-risk-audit`：
+
+- 本轮修的是 `P0`
+- 修改波及 abstract / intro / conclusion / main figure / theorem / key experiment
+- 可能改变 overall score 或 venue fit 判断
+- 修改后自己已无法确定是否引入新回归
+
+以下情况可先继续下一轮小修：
+
+- 只修单个表述或局部 caption
+- 不影响 claim、scorecard 或 decision 主结论
+- 只是清理明显格式或残留问题
+
+### Step 6: 决策
 
 - 改动显著降低风险 -> 保留
 - 改动带来新不确定性或副作用 -> 回滚或重写
+- 改动价值不明确，但成本已扩散 -> 停止本轮并请求复审，不继续连改
 
 ## 推荐输出格式
 
-- `本轮最低分维度`
+- `上游基线`
+- `本轮目标 finding`
 - `拟实施改动`
 - `验证结果`
 - `是否保留`
+- `是否进入复审`
 - `下一轮建议`
 
 ## 适合优化的对象
@@ -134,27 +216,49 @@ description: "用 Darwin 风格的评估-改进-验证-保留/回滚循环优化
 - 优先减少错误和硬伤，而不是追求“更像营销文案”
 - 优先提升审稿可验证性，而不是追求句子更华丽
 - 优先修硬伤，再修高频 reviewer irritation points
+- 没有上游 findings 时，也应先自造一个最小 finding，再进入改单轮
+- 不允许在 `NO-GO` 状态下跳过关键 `P0/P1`，直接去修边角料
+- 不把“分数可能会提高”当成事实，除非能说明是哪个 finding 被缓解了
 
 ## 与其他 Skills 的关系
 
-- 用 `reviewer-risk-audit` 产出问题列表
+- 默认上游是 `reviewer-risk-audit`
 - 用 `citation-reality-guard` 解决引用问题
+- 用 `writing-naturalness-guard` 处理自然化与 AI 痕迹问题
 - 用 `academic-paper-factory` 维持整体流程
+
+推荐闭环：
+
+`reviewer-risk-audit -> paper-ratchet-optimizer -> reviewer-risk-audit`
 
 ## 标准输入
 
 - 当前版本的草稿或指定 section
-- 上一轮问题列表或 reviewer 风险列表
+- 上一轮 `Findings`
+- 上一轮 `Scorecard`
+- 上一轮 `Decision`
+- 上一轮 `Residual Risks`
 - 本轮只允许优化的一个目标
 - 是否允许重新编译或改动 `.bib` / figures / appendix
 
 ## 标准交付
 
-- 本轮最低分维度
+- 上游基线：最低分维度、overall score、confidence、decision
+- 本轮目标 finding
 - 本轮改动策略
 - 验证结果
 - 保留 / 回滚建议
+- 是否建议立即复审
 - 下一轮最优先问题
+
+## 复审就绪信号
+
+若出现以下任一信号，建议把当前版本交回 `reviewer-risk-audit`：
+
+- 原 `P0` 已被针对性修复
+- 最低分维度已完成一轮实质性改善
+- `NO-GO` 的核心原因已处理
+- 关键 section 的主张、证据或格式边界发生了变化
 
 ## Examples
 

@@ -88,6 +88,16 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 主 Skill：`reviewer-risk-audit`
 - 常见追加：`claim-evidence-mapper`
 
+### Stage F2: 按审稿结果修稿与复审
+
+- 信号：按 reviewer 意见修一轮、根据 findings 改稿、修完后再审一次
+- 主 Skill：
+- 若已有 `Findings + Scorecard + Decision`，先用 `paper-ratchet-optimizer`
+- 若刚修完一轮，要重新判断当前版本值不值得投，回到 `reviewer-risk-audit`
+- 默认理解：
+- `paper-ratchet-optimizer` 负责读取上游审计结果，只修一个最高杠杆问题
+- `reviewer-risk-audit` 负责复审，看 score / confidence / decision 是否真的改善
+
 ### Stage G: 投稿与适配
 
 - 信号：准备投稿、检查 LaTeX、submission package、匿名性、checklist
@@ -116,6 +126,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - venue 选择失配：`venue-fit-selector`
 - AI 味过重或疑似存在提示语残留：`writing-naturalness-guard`
 - 去 AI 味过程中发现幻觉引用或错引：`citation-reality-guard`
+- 已有 findings，需要单轮修复：`paper-ratchet-optimizer`
+- 刚修完一轮，需要复审打分：`reviewer-risk-audit`
 
 ## 默认链路模板
 
@@ -138,6 +150,14 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 ### 去 AI 味但要同时查残留与幻觉问题
 
 `paper-intake-router -> writing-naturalness-guard -> citation-reality-guard -> reviewer-risk-audit`
+
+### 按 reviewer findings 修一轮
+
+`paper-intake-router -> paper-ratchet-optimizer -> reviewer-risk-audit`
+
+### 已经修完一轮，想再审一次
+
+`paper-intake-router -> reviewer-risk-audit`
 
 ### 投稿前最后 48 小时
 

@@ -7,6 +7,12 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 
 这个 Skill 专门防止“幻觉引用”“引用错配”“年份作者 venue 错误”“related work 过时”。
 
+它吸收了 `CiteCheck` 一类仓库里最有价值的做法，但保留为工具无关的通用 Skill：
+
+- 结构化来源梯度，而不是只信单一数据源
+- 显式拒绝低相似度误匹配，而不是“搜到一个像的就算”
+- 把存在性、元数据、queryability、语义一致性分开报告
+
 ## 何时调用
 
 - 用户要新增或修改 `.bib`
@@ -21,6 +27,7 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 2. 正文对引用的描述必须与原文结论一致
 3. `.bib` 的作者、年份、venue、arXiv / OpenReview / DOI 信息尽量准确
 4. Related Work 需要覆盖近 2–5 年代表性工作
+5. 高风险条目应尽量能在 2 个以上可信来源中被交叉确认
 
 ## 强制规则
 
@@ -41,8 +48,21 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 - 摘要、引言、related work、结论中出现的核心引用
 - 最近两年（当前年份往前推 2–3 年）的条目
 - arXiv / OpenReview / workshop / oral / poster 等高风险元数据
+- 从 PDF、LaTeX 或正文段落中临时提到、但还未进入 `.bib` 的候选引用
 
-### Step 2: 三层核验
+### Step 2: 先做格式与可查询性检查
+
+不要一上来就下真假结论，先看条目是否“可查”：
+
+- 标题是否完整到足以检索
+- 作者名是否至少保留主要作者信息
+- 年份是否像真实发表年份，而不是把 arXiv 编号片段误当成年份
+- DOI / arXiv / venue 字段是否结构正常
+- citekey 是否和条目内容明显脱节
+
+若条目本身残缺到无法可靠查询，应先标为 `P1` 或 `P0`，而不是硬匹配。
+
+### Step 3: 三层核验
 
 每条引用尽量走三层：
 
@@ -54,16 +74,47 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 
 - 期刊官网
 - 会议官网 / OpenReview / PMLR / proceedings
+- Crossref
+- Semantic Scholar
+- OpenAlex
 - arXiv
-- DBLP / Google Scholar 作为辅助
+- DBLP / Google Scholar / WebSearch 作为辅助
 
-### Step 3: 标记风险等级
+### Step 4: 拒绝低置信误匹配
 
-- `P0`：疑似假文献、完全找不到、正文描述与文献相反
-- `P1`：年份/venue/作者/接收状态错误
-- `P2`：近年工作覆盖不足、引用定位不够精确
+不要把“搜到一个很像的结果”当成核验成功。至少检查：
 
-### Step 4: 修正正文口径
+- 标题相似度是否足够高
+- 作者是否有明显重合
+- 年份是否接近且合理
+- venue 类型是否一致，例如 preprint / workshop / main conference / journal
+
+若出现以下情况，默认拒绝匹配，不直接写成“已核验”：
+
+- 标题只有部分词重合，但核心名词不一致
+- 作者几乎不重合
+- 年份偏差明显且无法解释为 preprint -> camera-ready -> journal extension
+- 把 arXiv 版本误认成正式发表版本
+- 只在低可信来源找到，但主流来源完全缺失
+
+### Step 5: 区分 queryability 与真实性
+
+把以下状态分开：
+
+- `Verified`：存在性和元数据都比较稳
+- `Ambiguous`：疑似存在，但匹配不够稳或来源冲突
+- `Unqueryable`：条目太残缺，暂时无法可靠查询
+- `Rejected`：高度怀疑是假引用或错配
+
+queryability 差不等于一定是假的，但一定是投稿风险。
+
+### Step 6: 标记风险等级
+
+- `P0`：疑似假文献、完全找不到、低置信误匹配被拒绝、正文描述与文献相反
+- `P1`：年份/venue/作者/接收状态错误，或条目可疑但仍需人工定夺
+- `P2`：近年工作覆盖不足、引用定位不够精确、可查询性差但不一定错误
+
+### Step 7: 修正正文口径
 
 对每个高风险引用，检查正文是否有以下问题：
 
@@ -72,7 +123,7 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 - 把“construction-based result”说成“general minimax theory”
 - 把“经验改进”说成“理论保证”
 
-### Step 5: 最终交付
+### Step 8: 最终交付
 
 输出：
 
@@ -84,6 +135,7 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 ## 默认输出格式
 
 - `确认真实的引用`
+- `可查询性 / 来源交叉确认`
 - `需要修正的元数据`
 - `正文描述风险`
 - `近年工作覆盖缺口`
@@ -95,6 +147,8 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 - 作者字段只有第一作者，但像是正式论文条目
 - `journal={arXiv preprint}` 与 `note={Accepted to ...}` 同时存在，需要核实最终状态
 - 正文宣称“证明了/首次/统一/最优”，但被引文献其实只做了 preliminary study
+- Crossref 能搜到相似标题，但作者、年份或 venue 明显对不上
+- 只在一个弱来源里能找到，而主流来源都没有
 
 ## 面向 AI 投稿的额外要求
 
@@ -111,6 +165,7 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 ## 标准输入
 
 - `.bib` 文件或引用条目列表
+- `.tex`、PDF、正文段落或从稿件中抽出的引用清单
 - 正文中高风险 section：abstract / intro / related work / conclusion
 - 目标年份窗口，默认近 2–5 年
 - 用户特别担心的条目：arXiv / OpenReview / workshop / accepted status
@@ -118,6 +173,7 @@ description: "核验引用真实存在、近年覆盖充分且元数据准确。
 ## 标准交付
 
 - 已确认真实的关键引用
+- 每条核心引用的 queryability / source status
 - 需要修正的元数据条目
 - 正文描述不准确的地方
 - 缺失的近年代表工作

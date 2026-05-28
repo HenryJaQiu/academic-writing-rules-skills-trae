@@ -61,8 +61,8 @@
 
 ### `citation-reality-guard`
 
-- 作用：核验引用真实存在、元数据正确、正文描述准确
-- 何时调用：补参考文献、检查幻觉引用、准备投稿前事实核查
+- 作用：核验引用真实存在、可查询性、来源交叉确认、误匹配风险与正文描述准确性
+- 何时调用：补参考文献、检查幻觉引用、准备投稿前事实核查，或怀疑某条引用是低置信匹配
 - 常见后续：`reviewer-risk-audit`、`latex-submission-packager`
 
 ### `experiment-story-builder`
@@ -85,20 +85,20 @@
 
 ### `writing-naturalness-guard`
 
-- 作用：降低模板化和 AI 味，并先检查提示语残留、元编辑残留与明显引用风险
-- 何时调用：用户明确要求 humanize，或稿件读起来过于规整，或怀疑存在 ChatGPT 残留与未清理的 AI 痕迹
+- 作用：用模式库降低模板化和 AI 味，并先检查提示语残留、元编辑残留、明显引用风险与二次审计信号
+- 何时调用：用户明确要求 humanize，或稿件读起来过于规整，或怀疑存在 ChatGPT 残留、AI 痕迹或需做 voice calibration
 - 常见后续：`paper-ratchet-optimizer`、`citation-reality-guard`
 
 ### `reviewer-risk-audit`
 
-- 作用：从审稿人视角审计 novelty、evidence、theory、experiment、presentation 风险
-- 何时调用：用户说“review 一下”“投稿前找硬伤”
+- 作用：从审稿人视角做结构化发现、量化打分、confidence 评估和 `GO / CONDITIONAL GO / NO-GO` 决策
+- 何时调用：用户说“review 一下”“投稿前找硬伤”，或需要按评分矩阵判断当前版本值不值得投
 - 常见后续：`paper-ratchet-optimizer`、`submission-integrity-audit`
 
 ### `paper-ratchet-optimizer`
 
-- 作用：按棘轮式迭代原则，只修高杠杆问题并保留可验证改进
-- 何时调用：中后期精修、摘要引言结论打磨、反复修改后需要控回归
+- 作用：按棘轮式迭代原则读取 `Findings + Scorecard + Decision`，只修一个高杠杆问题并保留可验证改进
+- 何时调用：中后期精修、审稿后按 findings 修稿、反复修改后需要控回归
 - 常见后续：`reviewer-risk-audit`、`writing-naturalness-guard`
 
 ### `venue-fit-selector`
@@ -146,7 +146,7 @@
 - 实验叙事：`experiment-story-builder`
 - 理论核查：`proof-consistency-checker`
 - 去 AI 味或查提示语残留：`writing-naturalness-guard`
-- 审稿前找硬伤：`reviewer-risk-audit`
+- 审稿前找硬伤或打分：`reviewer-risk-audit`
 - 选投哪里：`venue-fit-selector`
 - 投稿一致性审计：`submission-integrity-audit`
 - 最终打包：`latex-submission-packager`
