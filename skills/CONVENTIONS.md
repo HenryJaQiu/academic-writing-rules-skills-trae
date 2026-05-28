@@ -78,6 +78,7 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 专用 Skill 尽量解决一个核心问题，不承担统一入口职责
 - 用户明确说“每个 claim 有没有证据支撑 / abstract 句子是否被正文承接”时，优先进入 `claim-evidence-mapper`
 - 用户明确说“去 AI 味 / humanize”时，优先进入 `writing-naturalness-guard`
+- 对“去 AI 味”的默认理解应包含三联任务：文字自然化、提示语/元编辑残留检查、幻觉引用与明显合规风险初筛
 - 用户明确说“检查证明 / 补推导 / theorem 不一致”时，优先进入 `proof-consistency-checker`
 - 用户明确说“投哪个 venue 更合适 / 期刊还是会议更稳 / 转投去哪”时，优先进入 `venue-fit-selector`
 - 用户明确说“切换 venue / 准备投稿系统字段 / 改成某会议或期刊格式”时，优先进入 `venue-submission-adapter`
@@ -101,3 +102,4 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 任何牵涉图表、公式、引用、投稿格式的 Skill，都应明确“修改后如何验证”
 - 如果 Skill 建议调大图内字体、移动 legend、改页数或移动正文内容，必须同步要求检查导出 PDF 与编译后的最终论文 PDF
 - 任何牵涉 disclosure、checklist、code/data availability 的 Skill，都必须要求区分“已提供”“将提供”“不可提供”三种状态，禁止模糊承诺
+- 任何以“去 AI 味”为目标的 Skill，都不得只做文风润色；必须同时检查提示语残留、元编辑残留，以及是否存在需转交 `citation-reality-guard` 的幻觉引用风险

@@ -85,6 +85,12 @@
 - `theory` -> 吸收为 `proof-consistency-checker`
 - `nips` + `openreview` -> 抽象为 `venue-submission-adapter`
 
+其中 `writing-naturalness-guard` 不再只是语言自然化器，而是“自然化 + 风险门禁”组件：
+
+- 先查提示语残留、元编辑残留和明显 AI 痕迹
+- 若发现疑似幻觉引用或错引，转交 `citation-reality-guard`
+- 若只是风格模板化，再执行 humanize 改写
+
 ### 建议作为参考模板保留，但不进入 canonical set
 
 - `restruct`
@@ -135,6 +141,11 @@
 
 `paper-intake-router -> academic-paper-factory -> claim-evidence-mapper -> paper-ratchet-optimizer -> writing-naturalness-guard -> citation-reality-guard -> reviewer-risk-audit`
 
+说明：
+
+- 若 `writing-naturalness-guard` 命中 `P0` 引用风险，可先切到 `citation-reality-guard` 再返回自然化
+- 若命中 disclosure、图表或提交材料一致性风险，可转交 `submission-integrity-audit`
+
 ### venue 切换或投稿适配
 
 推荐链路：
@@ -179,6 +190,7 @@
 5. 所有引用必须真实存在且元数据准确
 6. 每轮优化只保留可验证提升，避免越改越乱
 7. 不把 NeurIPS、OpenReview、单一模板要求硬编码进所有 Skill
+8. 去 AI 味不是单纯修文，必须先区分文风问题与事实/合规风险
 
 ## 维护建议
 

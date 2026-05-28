@@ -68,6 +68,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 主 Skill：`paper-ratchet-optimizer`
 - 常见追加：`writing-naturalness-guard`
 
+### Stage E2: 去 AI 味与残留清理
+
+- 信号：去 AI 味、humanize、检查 ChatGPT 残留、清理奇怪的生成痕迹
+- 主 Skill：`writing-naturalness-guard`
+- 默认理解：这不是单纯润色，而是三联任务
+- 文字自然化
+- 提示语 / 元编辑残留检查
+- 幻觉引用、错引与明显合规风险初筛
+- 常见追加：
+- 若命中引用真实性风险：`citation-reality-guard`
+- 若命中 disclosure、图表或提交材料一致性风险：`submission-integrity-audit`
+
 ### Stage F: 审稿视角检查
 
 - 信号：review 一下、从审稿人角度看、投稿前找硬伤
@@ -98,7 +110,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 强表述过头：`paper-ratchet-optimizer`
 - 最终提交踩雷：`latex-submission-packager`
 - venue 选择失配：`venue-fit-selector`
-- AI 味过重：`writing-naturalness-guard`
+- AI 味过重或疑似存在提示语残留：`writing-naturalness-guard`
+- 去 AI 味过程中发现幻觉引用或错引：`citation-reality-guard`
 
 ## 默认链路模板
 
@@ -109,6 +122,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 ### 中途接手一篇已有草稿
 
 `paper-intake-router -> claim-evidence-mapper -> reviewer-risk-audit -> citation-reality-guard -> paper-ratchet-optimizer`
+
+### 去 AI 味但要同时查残留与幻觉问题
+
+`paper-intake-router -> writing-naturalness-guard -> citation-reality-guard -> reviewer-risk-audit`
 
 ### 投稿前最后 48 小时
 

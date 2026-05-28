@@ -73,9 +73,9 @@
 
 ### `writing-naturalness-guard`
 
-- 作用：降低模板化和 AI 味，提升研究者写作风格的自然性
-- 何时调用：用户明确要求 humanize，或稿件读起来过于规整
-- 常见后续：`paper-ratchet-optimizer`
+- 作用：降低模板化和 AI 味，并先检查提示语残留、元编辑残留与明显引用风险
+- 何时调用：用户明确要求 humanize，或稿件读起来过于规整，或怀疑存在 ChatGPT 残留与未清理的 AI 痕迹
+- 常见后续：`paper-ratchet-optimizer`、`citation-reality-guard`
 
 ### `reviewer-risk-audit`
 
@@ -131,7 +131,7 @@
 - 引用核验：`citation-reality-guard`
 - 实验叙事：`experiment-story-builder`
 - 理论核查：`proof-consistency-checker`
-- 去 AI 味：`writing-naturalness-guard`
+- 去 AI 味或查提示语残留：`writing-naturalness-guard`
 - 审稿前找硬伤：`reviewer-risk-audit`
 - 选投哪里：`venue-fit-selector`
 - 投稿一致性审计：`submission-integrity-audit`
