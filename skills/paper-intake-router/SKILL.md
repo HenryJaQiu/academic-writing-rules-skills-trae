@@ -35,13 +35,25 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 3. 若用户已经明确指定某个 Skill，不再重复路由
 4. 若 deadline 很近，优先处理 submission 与 reviewer risk，而不是重写大段正文
 
+## paper type 防滥用护栏
+
+- `paper type` 只是校准信号，不是重写论文主线的许可
+- 默认保守先验仍是“主流技术型论文”写法；只要主贡献是新方法、新机制、新理论或新系统能力，就不要因为实验很多而误切到 `benchmark/evaluation`
+- 只有当论文主贡献本身是 benchmark、evaluation protocol、diagnostic asset、meta-evaluation 结论或社区评估修正时，才显式走 `benchmark/evaluation` 分支
+- 若方法论文只是顺带提供更全面评测、更多诊断或更强分析，仍以技术类主线推进，把这些内容视为证据增强而不是 paper type 切换
+- 若当前无法判断论文更像哪一类，不要强行分型；先路由到 `paper-positioning` 明确主贡献，再让后续 Skill 沿用同一个判断
+- 任何分型都不能降低对技术类论文的核心要求：方法增量、最强 baseline、公平预算、ablation 与 claim-evidence 一致性
+
 ## 阶段路由
 
 ### Stage A: 想法与定位
 
 - 信号：能不能投、怎么定题、怎么定位
-- 主 Skill：`paper-positioning`
+- 主 Skill：
+- 若还在问“值不值得做 / 先做哪个 / 能不能投”：`idea-evaluator`
+- 若已经决定继续并要收紧 framing：`paper-positioning`
 - 常见追加：`venue-fit-selector`
+- 类型护栏：若用户把“实验很多”“有一个新 benchmark”当成分型理由，但主贡献仍是方法本身，优先按技术类定位，不提前切到 benchmark/evaluation 叙事
 
 ### Stage B: 从零起稿或搭骨架
 
@@ -61,8 +73,11 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 ### Stage D: 实验与图表叙事
 
 - 信号：实验节怎么写、图表怎么组织、caption 怎么改、baseline/消融/统计缺什么
-- 主 Skill：`experiment-story-builder`
+- 主 Skill：
+- 若重点是设计动机图/总览图/主结果图：`figure-design-advisor`
+- 若重点是实验节证据链、baseline、公平性、caption：`experiment-story-builder`
 - 常见追加：`submission-integrity-audit`
+- 类型护栏：只有当论文主贡献就是评估资产或协议设计时，才优先使用 `benchmark-evaluation mode`；否则技术类论文仍以“方法是否成立”为主线组织实验
 
 ### Stage E: 中后期打磨
 
@@ -87,6 +102,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 信号：review 一下、从审稿人角度看、投稿前找硬伤
 - 主 Skill：`reviewer-risk-audit`
 - 常见追加：`claim-evidence-mapper`
+- 类型护栏：即便论文包含大规模 benchmark，若主 claim 是方法创新，审稿口径仍优先看技术类硬伤，而不是被 benchmark 包装带偏
 
 ### Stage F2: 按审稿结果修稿与复审
 
@@ -97,6 +113,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 默认理解：
 - `paper-ratchet-optimizer` 负责读取上游审计结果，只修一个最高杠杆问题
 - `reviewer-risk-audit` 负责复审，看 score / confidence / decision 是否真的改善
+- 类型护栏：若上游把论文判为技术类，本阶段不得为了“更像 benchmark paper”而改写主贡献；修复优先级仍应围绕方法可信度与证据充分性
 
 ### Stage G: 投稿与适配
 
@@ -115,6 +132,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 ## 风险加挂规则
 
 - 定位不清：`paper-positioning`
+- idea 还在早期筛选：`idea-evaluator`
 - 引用或事实风险：`citation-reality-guard`
 - 指定论文问答或事实核查：`grounded-paper-qa`
 - 笔记散乱但已有大量阅读资产：`reading-note-synthesizer`
@@ -128,12 +146,13 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 去 AI 味过程中发现幻觉引用或错引：`citation-reality-guard`
 - 已有 findings，需要单轮修复：`paper-ratchet-optimizer`
 - 刚修完一轮，需要复审打分：`reviewer-risk-audit`
+- 核心图怎么表达不清：`figure-design-advisor`
 
 ## 默认链路模板
 
 ### 从 idea 到投稿
 
-`paper-positioning -> literature-survey-builder -> academic-paper-factory -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
+`idea-evaluator -> paper-positioning -> literature-survey-builder -> academic-paper-factory -> claim-evidence-mapper -> figure-design-advisor -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
 
 ### 中途接手一篇已有草稿
 
@@ -146,6 +165,14 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 ### 已有很多读书笔记，但还没变成论文素材
 
 `paper-intake-router -> reading-note-synthesizer -> literature-survey-builder -> claim-evidence-mapper`
+
+### 先判断 idea 值不值得继续做
+
+`paper-intake-router -> idea-evaluator -> paper-positioning`
+
+### 先把核心图设计清楚，再写实验与方法叙事
+
+`paper-intake-router -> figure-design-advisor -> experiment-story-builder -> submission-integrity-audit`
 
 ### 去 AI 味但要同时查残留与幻觉问题
 
@@ -173,12 +200,14 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 当前论文资产：idea / draft / figures / experiments / `.tex/.bib`
 - 目标 venue、年份、deadline
 - 用户显式指定的优先级或禁区
+- 若已知，论文主贡献更像 `technical-paper` 还是 `benchmark/evaluation`；若未知则显式标为 `待判断`
 
 ## 标准交付
 
 - `任务判定`
 - `当前阶段`
 - `最高优先级风险`
+- `paper type 判断或待判断状态`
 - `推荐调用`
 - `执行顺序`
 - `暂不建议现在做的事`

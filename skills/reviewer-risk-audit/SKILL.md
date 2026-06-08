@@ -1,6 +1,6 @@
 ---
 name: "reviewer-risk-audit"
-description: "从严苛审稿人视角审计新颖性、证据、写作、格式与投稿风险。Invoke when 用户要做审稿视角检查、重大修改后复审、或投稿前终审。"
+description: "从严苛审稿人视角审计新颖性、证据、写作、格式与投稿风险。Invoke when 用户要做审稿视角检查、重大修改后复审、或需要技术类与 benchmark/evaluation 类论文的类型化打分。"
 ---
 
 # Reviewer Risk Audit
@@ -54,6 +54,57 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - 查是否引入新回归
 - 更新 score、confidence 和 residual risks
 
+## 类型化校准
+
+默认按高水平 AI venue 的严苛标准审稿，但若论文类型已知，应继续区分：
+
+默认规则：
+
+- 若用户没有特意强调论文类型，默认按 `technical-paper` 校准
+- 只有当 benchmark、evaluation protocol、diagnostic asset 或社区评估修正本身就是第一贡献时，才切到 `benchmark-evaluation calibration`
+
+分型判据模板：
+
+1. `主贡献是什么`
+   - 若主贡献是新方法、新机制、新理论或新系统能力，默认 `technical-paper`
+2. `去掉 benchmark 后是否仍成立`
+   - 若删掉更丰富评测后，核心论文仍成立，仍按 `technical-paper`
+3. `reviewer 最该问什么`
+   - 若核心问题是方法增量、baseline 公平性、ablation 与证据闭环，按 `technical-paper`
+   - 若核心问题是评估协议合理性、覆盖性、公平性与社区价值，按 `benchmark-evaluation`
+4. `是否真的在修正社区评估`
+   - 只有当 benchmark/protocol 本身就是论文核心资产，才切到 `benchmark-evaluation`
+
+### `technical-paper calibration`
+
+更关注：
+
+- 机制或方法是否真的新增
+- 最强 baseline 是否公平
+- ablation 和机制分析是否足以支撑方法设计
+- 提升是否稳定，而非只在少数设置有效
+
+高风险信号：
+
+- 只是组合已有模块，却包装成核心创新
+- 主结果有提升，但没有解释为什么有效
+- 方法贡献和实验增益不匹配
+
+### `benchmark-evaluation calibration`
+
+更关注：
+
+- benchmark / protocol 的缺口是否真实存在
+- 覆盖性、公平性、诊断性是否被证明
+- 是否真的能改变旧结论、暴露失效模式或带来社区价值
+- 是否把特定评测口径下的现象夸成普遍规律
+
+高风险信号：
+
+- 只是换一个评测协议，但没有证明更合理
+- 只展示少量方法或设置，就声称改变社区认知
+- 评估结论依赖单一 metric / 单一切分 / 单一数据子集
+
 ## 必查维度
 
 ### 1. 新颖性与定位
@@ -62,6 +113,11 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - 是否真的有明确增量
 - 是否有“换名词但没增量”的风险
 - 是否把目标不同的工作错误地当作被超越对象
+
+若是 `benchmark-evaluation` 类论文，还要额外查：
+
+- benchmark / evaluation gap 是否被具体举证
+- 社区价值是否真实，而不是只做了整理性汇总
 
 ### 2. 证据与主张一致性
 
@@ -84,6 +140,12 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - caption 是否能复现实验设置
 - 图内标题、caption、正文数字是否一致
 - 黑白可读性、legend 遮挡、表格溢出是否影响审稿体验
+
+若是 `benchmark-evaluation` 类论文，还要额外查：
+
+- coverage / fairness / subgroup / protocol 说明是否充分
+- 是否有方法重排、失效模式或诊断价值的直接证据
+- 是否把 evaluation artifact 的局部现象夸成通用规律
 
 ### 5. 投稿格式风险
 
@@ -109,6 +171,22 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - 是否因为单一硬伤而忽略整体可修复性
 - confidence 是否与证据完整度匹配
 - venue 标准是否被正确理解，而不是拿理想化标准拍死稿件
+
+## 类型特定审稿问题
+
+### 技术类论文常问
+
+- 核心方法到底新增了什么，而不是复述已有 pipeline？
+- 最强 baseline、预算、模型规模和数据量是否公平？
+- ablation 是否真的定位到关键设计，而不是装饰性实验？
+- 是否存在“结果有一点提升，但方法解释和理论支撑很弱”的问题？
+
+### benchmark/evaluation 类论文常问
+
+- 现有 benchmark / evaluation protocol 的缺口是否被具体、可验证地说明？
+- 新 benchmark / protocol 是否更公平、更有覆盖性或更有诊断性？
+- 结论是否在不同任务、切分、metrics、seeds 下稳定？
+- 这篇论文带来的价值是社区评估升级，还是只是换了一套报分方式？
 
 ## Finding Protocol
 
@@ -200,6 +278,8 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - overall score
 - confidence
 - target venue calibration
+- paper-type calibration
+- paper-type rationale
 
 `Decision` 至少包含：
 
@@ -224,6 +304,8 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - Findings 很多，但没有哪一条能定位到具体 section 或证据
 - recommendation 和前面 findings 严重脱节
 - confidence 很高，但其实没读 appendix / figures / checklist
+- benchmark/evaluation 稿件把 protocol-specific 结果写成普适结论
+- 技术类稿件把 benchmark 整理或分析性观察包装成方法创新
 
 ## 推荐审计节奏
 
@@ -234,6 +316,7 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 ## 与其他 Skills 的关系
 
 - 若问题出在定位，回调 `paper-positioning`
+- 若论文类型还不清楚，先回调 `paper-positioning` 明确是技术类还是 benchmark/evaluation 类
 - 若问题出在引用，回调 `citation-reality-guard`
 - 若需要持续迭代修复，回调 `paper-ratchet-optimizer`
 
@@ -243,11 +326,14 @@ description: "从严苛审稿人视角审计新颖性、证据、写作、格式
 - 目标 venue 与年份
 - 是否已具备 appendix / checklist / supplementary
 - 用户最担心的风险：新颖性 / 实验 / 理论 / 格式
+- 是否更像 `技术类` 或 `benchmark/evaluation` 类论文；若未说明，默认按 `technical-paper`
 
 ## 标准交付
 
 - Findings，按 P0 / P1 / P2 排序
 - Scorecard: 维度分 + overall score + confidence
+- Type calibration: `technical-paper` 或 `benchmark-evaluation`
+- Type rationale: 为什么这样判
 - Decision: `GO / CONDITIONAL GO / NO-GO`
 - Open Questions / Assumptions
 - Change Summary

@@ -26,12 +26,14 @@
 ### 3. 核心执行层
 
 - `paper-positioning`
+- `idea-evaluator`
 - `literature-survey-builder`
 - `grounded-paper-qa`
 - `reading-note-synthesizer`
 - `claim-evidence-mapper`
 - `citation-reality-guard`
 - `experiment-story-builder`
+- `figure-design-advisor`
 - `latex-first-compile-bootstrap`
 - `proof-consistency-checker`
 - `writing-naturalness-guard`
@@ -53,24 +55,26 @@
 1. `paper-intake-router`
 2. `academic-paper-factory`
 3. `paper-positioning`
-4. `literature-survey-builder`
-5. `grounded-paper-qa`
-6. `reading-note-synthesizer`
-7. `claim-evidence-mapper`
-8. `citation-reality-guard`
-9. `experiment-story-builder`
-10. `latex-first-compile-bootstrap`
-11. `proof-consistency-checker`
-12. `writing-naturalness-guard`
-13. `reviewer-risk-audit`
-14. `paper-ratchet-optimizer`
-15. `venue-fit-selector`
-16. `submission-integrity-audit`
-17. `latex-submission-packager`
-18. `venue-submission-adapter`
-19. `rebuttal-response-drafter`
+4. `idea-evaluator`
+5. `literature-survey-builder`
+6. `grounded-paper-qa`
+7. `reading-note-synthesizer`
+8. `claim-evidence-mapper`
+9. `citation-reality-guard`
+10. `experiment-story-builder`
+11. `figure-design-advisor`
+12. `latex-first-compile-bootstrap`
+13. `proof-consistency-checker`
+14. `writing-naturalness-guard`
+15. `reviewer-risk-audit`
+16. `paper-ratchet-optimizer`
+17. `venue-fit-selector`
+18. `submission-integrity-audit`
+19. `latex-submission-packager`
+20. `venue-submission-adapter`
+21. `rebuttal-response-drafter`
 
-这 19 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview、Zotero 或某个单一论文类型上。
+这 21 个 Skill 覆盖了绝大多数学术期刊/会议工作流，且不会把库绑死在 NeurIPS、OpenReview、Zotero 或某个单一论文类型上。
 
 其中三类新增能力分别对应三批高频缺口：
 
@@ -88,6 +92,33 @@
 - `reading-note-synthesizer`
   作用：把阅读笔记、摘录和批注转成 related work、定位、rebuttal 可直接复用的结构化资产
 
+参考 `Supervisor-Skills` 之后，又补上了两类更偏“导师式科研判断”的能力：
+
+- `idea-evaluator`
+  作用：在真正进入 paper positioning 前，先评估一个 idea 值不值得做、适不适合作为主线论文方向
+- `figure-design-advisor`
+  作用：把动机图、方法总览图和实验结果图单独建模，补上“图的叙事设计”这一层
+
+同时没有继续新增 `intro-drafter` 或 `benchmark-paper-template` 这类目录，而是把它们更值得保留的价值压缩吸收到 `paper-positioning`：
+
+- `introduction-flowchart` mode
+- `技术类论文` 与 `benchmark/evaluation 类论文` 的定位模板
+
+同样地，没有再拆一个独立的 benchmark 实验 Skill，而是把类型化实验叙事直接吸收到 `experiment-story-builder`：
+
+- `core-experiment-story`
+- `benchmark-evaluation mode`
+
+审稿层也沿用同一原则，没有再拆 `technical-reviewer` 或 `benchmark-reviewer`，而是把类型化校准直接吸收到 `reviewer-risk-audit`：
+
+- `technical-paper calibration`
+- `benchmark-evaluation calibration`
+
+修复层也继续沿用同一原则，没有再拆 `technical-ratchet` 或 `benchmark-ratchet`，而是把类型化修复直接吸收到 `paper-ratchet-optimizer`：
+
+- `technical-paper repair`
+- `benchmark-evaluation repair`
+
 ## 外部 Skills 的整理结论
 
 ### 建议吸收为通用能力
@@ -98,6 +129,8 @@
 - `lit-review mode` + `systematic-review mode` -> 增强为 `literature-survey-builder`
 - `fact-check mode` + citation-backed answer pattern -> 抽象为 `grounded-paper-qa`
 - notes-to-writing workflow -> 抽象为 `reading-note-synthesizer`
+- supervisor-style idea triage -> 抽象为 `idea-evaluator`
+- motivated / overview / result figure design -> 抽象为 `figure-design-advisor`
 
 其中 `writing-naturalness-guard` 不再只是语言自然化器，而是“自然化 + 风险门禁”组件：
 
@@ -141,7 +174,7 @@
 
 推荐链路：
 
-`paper-intake-router -> academic-paper-factory -> paper-positioning -> literature-survey-builder -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
+`paper-intake-router -> academic-paper-factory -> idea-evaluator -> paper-positioning -> literature-survey-builder -> claim-evidence-mapper -> figure-design-advisor -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
 
 若前期有大量指定论文需要先问清事实，可插入：
 
@@ -151,6 +184,14 @@
 
 `paper-intake-router -> reading-note-synthesizer -> literature-survey-builder`
 
+若还在判断一个题值不值得做，可前插：
+
+`paper-intake-router -> idea-evaluator -> paper-positioning`
+
+若主图/总览图表达不清，可前插：
+
+`paper-intake-router -> figure-design-advisor -> experiment-story-builder`
+
 投稿前审核与优化阶段，推荐显式走一个闭环：
 
 `reviewer-risk-audit -> paper-ratchet-optimizer -> reviewer-risk-audit`
@@ -158,6 +199,12 @@
 第一轮审计负责给出 findings、score、confidence 和 `GO / CONDITIONAL GO / NO-GO`；
 中间一轮由 `paper-ratchet-optimizer` 读取 `Findings + Scorecard + Decision`，只修一个最高杠杆问题；
 最后一轮复审确认 score 是否真的改善、是否仍有 `P0/P1` 未关闭。
+
+若论文类型已明确，建议把同一个 type signal 贯穿整条链：
+
+`paper-positioning -> experiment-story-builder -> reviewer-risk-audit -> paper-ratchet-optimizer`
+
+也就是定位层先判断更像技术类还是 benchmark/evaluation 类，实验层按对应证据链组织，审稿层按对应口径打分，修复层再按对应高杠杆缺口做最小闭环修复。
 
 ### 理论型或理论+方法型论文
 
@@ -175,6 +222,7 @@
 
 - 若 `writing-naturalness-guard` 命中 `P0` 引用风险，可先切到 `citation-reality-guard` 再返回自然化
 - 若命中 disclosure、图表或提交材料一致性风险，可转交 `submission-integrity-audit`
+- 若已知是技术类或 benchmark/evaluation 类论文，优先让 `paper-ratchet-optimizer` 继续沿用上一轮 `reviewer-risk-audit` 的 paper-type calibration
 
 ### venue 切换或投稿适配
 

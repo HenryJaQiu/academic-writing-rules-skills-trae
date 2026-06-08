@@ -77,14 +77,21 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 多 Skill 任务优先由 `academic-paper-factory` 编排
 - 专用 Skill 尽量解决一个核心问题，不承担统一入口职责
 - 用户明确说“每个 claim 有没有证据支撑 / abstract 句子是否被正文承接”时，优先进入 `claim-evidence-mapper`
+- 用户明确说“这个 idea 值不值得做 / 先做哪个想法 / 能不能投”时，优先进入 `idea-evaluator`
 - 用户明确说“只根据我给你的论文回答 / 先核查这些论文到底说了什么”时，优先进入 `grounded-paper-qa`
 - 用户明确说“我已经有很多读书笔记 / 高亮 / 摘录，帮我整理成写作素材”时，优先进入 `reading-note-synthesizer`
+- 用户明确说“这张图该怎么设计 / 动机图怎么画 / 总览图怎么表达”时，优先进入 `figure-design-advisor`
 - 用户明确说“去 AI 味 / humanize”时，优先进入 `writing-naturalness-guard`
 - 对“去 AI 味”的默认理解应包含三联任务：文字自然化、提示语/元编辑残留检查、幻觉引用与明显合规风险初筛
 - 用户明确说“检查证明 / 补推导 / theorem 不一致”时，优先进入 `proof-consistency-checker`
 - 用户明确说“投哪个 venue 更合适 / 期刊还是会议更稳 / 转投去哪”时，优先进入 `venue-fit-selector`
 - 用户明确说“切换 venue / 准备投稿系统字段 / 改成某会议或期刊格式”时，优先进入 `venue-submission-adapter`
 - 用户明确说“检查 figures / tables / checklist / ethics / code availability / disclosure 一致性”时，优先进入 `submission-integrity-audit`
+- 论文类型分支默认只作为校准信号，不作为重写论文主线的理由
+- 若用户没有特意强调论文类型，默认按 `技术研究型论文` 路由与校准
+- 只要主贡献是方法、理论或系统能力，即使实验很多，也默认按技术类论文路由
+- 只有当 benchmark、evaluation protocol、diagnostic asset 或社区评估修正本身就是第一贡献时，才路由到 `benchmark/evaluation` 主线
+- 若当前无法判断论文类型，优先进入 `paper-positioning` 做主贡献判定，而不是在入口层强行分型
 
 ## 输出约定
 
@@ -106,6 +113,8 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 任何牵涉 disclosure、checklist、code/data availability 的 Skill，都必须要求区分“已提供”“将提供”“不可提供”三种状态，禁止模糊承诺
 - 任何以“去 AI 味”为目标的 Skill，都不得只做文风润色；必须同时检查提示语残留、元编辑残留，以及是否存在需转交 `citation-reality-guard` 的幻觉引用风险
 - 任何以论文问答、读书笔记整理或系统综述为目标的 Skill，都必须区分“原文事实”“个人判断”“待核验项”，禁止把二手笔记直接写成确定结论
+- 任何使用 `paper type` 的 Skill，都必须保证技术类论文的核心审查标准不被弱化：方法增量、最强 baseline、公平预算、ablation 与 claim-evidence 一致性
+- 不得因为 benchmark/evaluation 分支的存在，就把主流技术型论文错误改写成“社区评测资产”叙事
 
 ## 演化约定
 

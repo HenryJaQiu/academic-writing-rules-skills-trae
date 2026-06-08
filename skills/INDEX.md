@@ -31,9 +31,15 @@
 
 ### `paper-positioning`
 
-- 作用：澄清问题定义、差异点、最小贡献集和不能乱说的边界
-- 何时调用：选题、定题、标题摘要反复改但贡献仍不清
+- 作用：澄清问题定义、差异点、最小贡献集、intro 主线和不能乱说的边界
+- 何时调用：选题、定题、标题摘要反复改但贡献仍不清，或需要 introduction flowchart / 技术类与 benchmark 类定位模板
 - 常见后续：`literature-survey-builder`、`claim-evidence-mapper`
+
+### `idea-evaluator`
+
+- 作用：从导师视角评估 idea 的价值、可行性、能力匹配和投稿潜力
+- 何时调用：用户还在问“值不值得做”“先做哪个 idea”“能不能投”
+- 常见后续：`paper-positioning`、`venue-fit-selector`
 
 ### `literature-survey-builder`
 
@@ -67,9 +73,15 @@
 
 ### `experiment-story-builder`
 
-- 作用：组织实验叙事、图表角色、baseline、ablation、caption 和统计信息
-- 何时调用：实验很多但不知道怎么讲，或实验节说服力不够
+- 作用：组织实验叙事、图表角色、baseline、ablation、caption 和统计信息，并支持 benchmark/evaluation 类实验模板
+- 何时调用：实验很多但不知道怎么讲，实验节说服力不够，或需要区分技术类与 benchmark/evaluation 类实验叙事
 - 常见后续：`submission-integrity-audit`、`claim-evidence-mapper`
+
+### `figure-design-advisor`
+
+- 作用：把图的表达目标转成动机图、方法总览图或实验结果图的设计方案
+- 何时调用：用户要设计核心 figure、优化图的信息层次，或不知道一张图该怎么画才像顶会
+- 常见后续：`experiment-story-builder`、`submission-integrity-audit`
 
 ### `latex-first-compile-bootstrap`
 
@@ -91,14 +103,14 @@
 
 ### `reviewer-risk-audit`
 
-- 作用：从审稿人视角做结构化发现、量化打分、confidence 评估和 `GO / CONDITIONAL GO / NO-GO` 决策
-- 何时调用：用户说“review 一下”“投稿前找硬伤”，或需要按评分矩阵判断当前版本值不值得投
+- 作用：从审稿人视角做结构化发现、量化打分、confidence 评估和 `GO / CONDITIONAL GO / NO-GO` 决策，并支持技术类与 benchmark/evaluation 类论文的类型化校准
+- 何时调用：用户说“review 一下”“投稿前找硬伤”，或需要按评分矩阵和论文类型判断当前版本值不值得投
 - 常见后续：`paper-ratchet-optimizer`、`submission-integrity-audit`
 
 ### `paper-ratchet-optimizer`
 
-- 作用：按棘轮式迭代原则读取 `Findings + Scorecard + Decision`，只修一个高杠杆问题并保留可验证改进
-- 何时调用：中后期精修、审稿后按 findings 修稿、反复修改后需要控回归
+- 作用：按棘轮式迭代原则读取 `Findings + Scorecard + Decision`，只修一个高杠杆问题并保留可验证改进，并支持技术类与 benchmark/evaluation 类论文的差异化修复
+- 何时调用：中后期精修、审稿后按 findings 修稿、反复修改后需要控回归，或需要按论文类型决定先修“方法是否成立”还是“评估资产是否可信”
 - 常见后续：`reviewer-risk-audit`、`writing-naturalness-guard`
 
 ### `venue-fit-selector`
@@ -137,6 +149,7 @@
 
 - 需求模糊：`paper-intake-router`
 - 从零起稿：`academic-paper-factory`
+- idea 值不值得做：`idea-evaluator`
 - 定位不清：`paper-positioning`
 - 文献综述：`literature-survey-builder`
 - 指定论文问答：`grounded-paper-qa`
@@ -144,9 +157,11 @@
 - claim 过大：`claim-evidence-mapper`
 - 引用核验：`citation-reality-guard`
 - 实验叙事：`experiment-story-builder`
+- 核心图设计：`figure-design-advisor`
 - 理论核查：`proof-consistency-checker`
 - 去 AI 味或查提示语残留：`writing-naturalness-guard`
 - 审稿前找硬伤或打分：`reviewer-risk-audit`
+- 按 findings 做单轮高杠杆修复：`paper-ratchet-optimizer`
 - 选投哪里：`venue-fit-selector`
 - 投稿一致性审计：`submission-integrity-audit`
 - 最终打包：`latex-submission-packager`

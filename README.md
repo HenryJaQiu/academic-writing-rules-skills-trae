@@ -56,22 +56,24 @@ skills/
 1. `paper-intake-router`
 2. `academic-paper-factory`
 3. `paper-positioning`
-4. `literature-survey-builder`
-5. `grounded-paper-qa`
-6. `reading-note-synthesizer`
-7. `claim-evidence-mapper`
-8. `citation-reality-guard`
-9. `experiment-story-builder`
-10. `latex-first-compile-bootstrap`
-11. `proof-consistency-checker`
-12. `writing-naturalness-guard`
-13. `reviewer-risk-audit`
-14. `paper-ratchet-optimizer`
-15. `venue-fit-selector`
-16. `submission-integrity-audit`
-17. `latex-submission-packager`
-18. `venue-submission-adapter`
-19. `rebuttal-response-drafter`
+4. `idea-evaluator`
+5. `literature-survey-builder`
+6. `grounded-paper-qa`
+7. `reading-note-synthesizer`
+8. `claim-evidence-mapper`
+9. `citation-reality-guard`
+10. `experiment-story-builder`
+11. `figure-design-advisor`
+12. `latex-first-compile-bootstrap`
+13. `proof-consistency-checker`
+14. `writing-naturalness-guard`
+15. `reviewer-risk-audit`
+16. `paper-ratchet-optimizer`
+17. `venue-fit-selector`
+18. `submission-integrity-audit`
+19. `latex-submission-packager`
+20. `venue-submission-adapter`
+21. `rebuttal-response-drafter`
 
 ## 新增能力
 
@@ -89,6 +91,10 @@ skills/
   用于把读书笔记、高亮、摘录和会议记录整理成 related work、定位和 rebuttal 可复用素材
 - `literature-survey-builder` 增强
   新增 `scan / lit-review / systematic-review` 三种工作模式，支持更严格的文献覆盖说明与检索逻辑记录
+- `idea-evaluator`
+  用于在真正投入实验和写作前，先从导师视角评估一个 idea 是否值得做、能否成论文、是否与当前资源能力匹配
+- `figure-design-advisor`
+  用于把“想表达什么”转成动机图、方法总览图和实验结果图的设计方案，补上图的叙事设计层
 
 ## 推荐使用方式
 
@@ -110,6 +116,10 @@ skills/
 
 `paper-intake-router -> academic-paper-factory -> paper-positioning -> literature-survey-builder -> claim-evidence-mapper -> experiment-story-builder -> citation-reality-guard -> reviewer-risk-audit -> venue-fit-selector -> submission-integrity-audit -> latex-submission-packager`
 
+如果还在判断某个 idea 值不值得做，可走：
+
+`paper-intake-router -> idea-evaluator -> paper-positioning`
+
 如果前期先要基于一批论文问清事实，再进入综述和写作，可走：
 
 `paper-intake-router -> grounded-paper-qa -> literature-survey-builder -> paper-positioning`
@@ -117,6 +127,10 @@ skills/
 如果已经积累了很多读书笔记、高亮和摘录，但还没变成论文资产，可走：
 
 `paper-intake-router -> reading-note-synthesizer -> literature-survey-builder -> claim-evidence-mapper`
+
+如果核心图还没想清楚怎么表达，可走：
+
+`paper-intake-router -> figure-design-advisor -> experiment-story-builder -> submission-integrity-audit`
 
 ### 3. 投稿前终审
 
