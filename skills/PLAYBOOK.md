@@ -109,6 +109,11 @@
 - `core-experiment-story`
 - `benchmark-evaluation mode`
 
+这轮又继续吸收了 experiment-agent / pipeline 类设计里更值得保留的部分，但仍不新增目录：
+
+- 把 `checkpoint/dashboard` 式推进吸收到 `academic-paper-factory`
+- 把 `reproducibility guard` 与 `human-study guard` 吸收到 `experiment-story-builder`
+
 审稿层也沿用同一原则，没有再拆 `technical-reviewer` 或 `benchmark-reviewer`，而是把类型化校准直接吸收到 `reviewer-risk-audit`：
 
 - `technical-paper calibration`
@@ -184,6 +189,10 @@
 
 `paper-intake-router -> reading-note-synthesizer -> literature-survey-builder`
 
+若你现在不想立刻跑完整流程，只想先看当前阶段、主风险和下一步最小动作，可先停在：
+
+`paper-intake-router -> academic-paper-factory`
+
 若还在判断一个题值不值得做，可前插：
 
 `paper-intake-router -> idea-evaluator -> paper-positioning`
@@ -191,6 +200,10 @@
 若主图/总览图表达不清，可前插：
 
 `paper-intake-router -> figure-design-advisor -> experiment-story-builder`
+
+若实验本身牵涉复现性、标注协议、人工评测或 human study 风险，也优先把这些护栏显式交给：
+
+`paper-intake-router -> experiment-story-builder`
 
 投稿前审核与优化阶段，推荐显式走一个闭环：
 
@@ -223,6 +236,7 @@
 - 若 `writing-naturalness-guard` 命中 `P0` 引用风险，可先切到 `citation-reality-guard` 再返回自然化
 - 若命中 disclosure、图表或提交材料一致性风险，可转交 `submission-integrity-audit`
 - 若已知是技术类或 benchmark/evaluation 类论文，优先让 `paper-ratchet-optimizer` 继续沿用上一轮 `reviewer-risk-audit` 的 paper-type calibration
+- 若中期卡在“实验很多但不知道哪些能进主文、哪些缺复现信息、人工评测是否站得住”，优先先过 `experiment-story-builder`
 
 ### venue 切换或投稿适配
 

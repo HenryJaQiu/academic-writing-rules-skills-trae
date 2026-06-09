@@ -35,6 +35,19 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 3. 若用户已经明确指定某个 Skill，不再重复路由
 4. 若 deadline 很近，优先处理 submission 与 reviewer risk，而不是重写大段正文
 
+## 微意图快捷路由
+
+若用户的需求已经非常具体，优先按下面的微意图直达，而不是先给一整条长链：
+
+- `checkpoint dashboard`：用户说“先看看下一步做什么”“先别全跑”“先给我 dashboard / checkpoint” -> `academic-paper-factory`
+- `abstract-only`：用户说“只写摘要”“先帮我起草/收紧 abstract” -> `paper-positioning`，若已有 findings 则可转 `paper-ratchet-optimizer`
+- `outline-only`：用户说“先搭大纲”“先给结构，不要展开全文” -> `academic-paper-factory` 或 `paper-positioning`
+- `revision-coach`：用户说“先把 reviewer comments 变成修稿路线图”“先拆修稿计划，不要直接改文” -> `paper-ratchet-optimizer`
+- `citation-check`：用户说“先查引用对不对”“只核 bib / references / citation metadata” -> `citation-reality-guard`
+- `review-only`：用户说“先 review，不要润色” -> `reviewer-risk-audit`
+- `figure-only`：用户说“先看图怎么画/怎么改” -> `figure-design-advisor`
+- `experiment-only`：用户说“先看实验怎么补”“先判断哪些实验该进主文” -> `experiment-story-builder`
+
 ## paper type 防滥用护栏
 
 - `paper type` 只是校准信号，不是重写论文主线的许可
@@ -60,6 +73,10 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 信号：从零写论文、组织已有结果、搭摘要/引言/方法骨架
 - 主 Skill：`academic-paper-factory`
 - 常见追加：`paper-positioning`
+- 微意图补充：
+- 若用户只要当前阶段 dashboard：`academic-paper-factory` 的 `checkpoint-dashboard`
+- 若用户只要 outline，不要整篇展开：优先 `academic-paper-factory`，必要时追加 `paper-positioning`
+- 若用户只要 abstract 第一版：优先 `paper-positioning`
 
 ### Stage C: 文献与引用
 
@@ -69,6 +86,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 若偏把读书笔记、摘录、批注整理成写作素材：`reading-note-synthesizer`
 - 若偏文献矩阵与差异分析：`literature-survey-builder`
 - 若偏真实性核验与元数据修正：`citation-reality-guard`
+- 微意图补充：
+- 若用户只说“check citations / 核 references / 修 bib”：直接走 `citation-reality-guard`
 
 ### Stage D: 实验与图表叙事
 
@@ -78,12 +97,18 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 若重点是实验节证据链、baseline、公平性、caption：`experiment-story-builder`
 - 常见追加：`submission-integrity-audit`
 - 类型护栏：只有当论文主贡献就是评估资产或协议设计时，才优先使用 `benchmark-evaluation mode`；否则技术类论文仍以“方法是否成立”为主线组织实验
+- 微意图补充：
+- 若用户只关心某张图怎么画：直接走 `figure-design-advisor`
+- 若用户只关心复现性、人工评测协议或实验是否能进主文：直接走 `experiment-story-builder`
 
 ### Stage E: 中后期打磨
 
 - 信号：做一轮微调、优化摘要/引言/结论、持续打磨稿件
 - 主 Skill：`paper-ratchet-optimizer`
 - 常见追加：`writing-naturalness-guard`
+- 微意图补充：
+- 若用户只想收紧 abstract / intro / conclusion：`paper-ratchet-optimizer`
+- 若用户要先把修稿任务拆成路线图，再决定改哪一轮：`paper-ratchet-optimizer`
 
 ### Stage E2: 去 AI 味与残留清理
 
@@ -103,6 +128,8 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - 主 Skill：`reviewer-risk-audit`
 - 常见追加：`claim-evidence-mapper`
 - 类型护栏：即便论文包含大规模 benchmark，若主 claim 是方法创新，审稿口径仍优先看技术类硬伤，而不是被 benchmark 包装带偏
+- 微意图补充：
+- 若用户明确说“只 review，不要改稿”：直接走 `reviewer-risk-audit`
 
 ### Stage F2: 按审稿结果修稿与复审
 
@@ -208,6 +235,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - `当前阶段`
 - `最高优先级风险`
 - `paper type 判断或待判断状态`
+- `若命中微意图，说明对应 shortcut`
 - `推荐调用`
 - `执行顺序`
 - `暂不建议现在做的事`
@@ -217,3 +245,6 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - “继续推进这篇论文，你自己判断现在先做什么。”
 - “我有草稿、实验和一个 bib，帮我分步骤推进到投稿。”
 - “现在时间不多了，帮我判断应该先补实验、先核引用还是先做投稿检查。”
+- “先别全跑，先给我一个 checkpoint dashboard。”
+- “只帮我看 citation 有没有错，不要做别的。”
+- “先把 reviewer comments 变成修稿路线图，不要直接改正文。”

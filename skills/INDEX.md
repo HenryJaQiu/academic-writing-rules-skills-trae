@@ -15,16 +15,16 @@
 
 ### `paper-intake-router`
 
-- 作用：识别论文所处阶段、主风险和下一步 Skill 链
-- 何时调用：用户请求模糊、任务跨多个阶段、或需要自动分流
+- 作用：识别论文所处阶段、主风险和下一步 Skill 链，并支持 checkpoint dashboard、abstract-only、outline-only、revision-coach、citation-check 等微意图快捷分流
+- 何时调用：用户请求模糊、任务跨多个阶段、需要自动分流，或虽需求具体但还没明确该调用哪个 Skill
 - 常见后续：`academic-paper-factory`、`paper-positioning`、`reviewer-risk-audit`
 
 ## 总控层
 
 ### `academic-paper-factory`
 
-- 作用：统筹从 idea 到 submission-ready 的完整推进流程
-- 何时调用：从零开始写论文，或需要把多个写作子任务组织成稳定流程
+- 作用：统筹从 idea 到 submission-ready 的完整推进流程，并支持先产出 checkpoint dashboard 再决定是否继续推进
+- 何时调用：从零开始写论文，或需要把多个写作子任务组织成稳定流程，或想先看“当前阶段 / 主风险 / 下一步最小行动集”
 - 常见后续：`paper-positioning`、`literature-survey-builder`、`claim-evidence-mapper`
 
 ## 核心执行层
@@ -73,8 +73,8 @@
 
 ### `experiment-story-builder`
 
-- 作用：组织实验叙事、图表角色、baseline、ablation、caption 和统计信息，并支持 benchmark/evaluation 类实验模板
-- 何时调用：实验很多但不知道怎么讲，实验节说服力不够，或需要区分技术类与 benchmark/evaluation 类实验叙事
+- 作用：组织实验叙事、图表角色、baseline、ablation、caption 和统计信息，并补 reproducibility 与 human-study 风险护栏
+- 何时调用：实验很多但不知道怎么讲，实验节说服力不够，需要区分技术类与 benchmark/evaluation 类实验叙事，或要补复现性/人工评测协议检查
 - 常见后续：`submission-integrity-audit`、`claim-evidence-mapper`
 
 ### `figure-design-advisor`
@@ -148,7 +148,11 @@
 ## 快速选择
 
 - 需求模糊：`paper-intake-router`
+- 先给 checkpoint / dashboard：`paper-intake-router` 或 `academic-paper-factory`
 - 从零起稿：`academic-paper-factory`
+- 先看当前 checkpoint 和下一步：`academic-paper-factory`
+- 只写摘要：`paper-positioning`
+- 只搭大纲：`academic-paper-factory`
 - idea 值不值得做：`idea-evaluator`
 - 定位不清：`paper-positioning`
 - 文献综述：`literature-survey-builder`
@@ -156,7 +160,9 @@
 - 读书笔记整理：`reading-note-synthesizer`
 - claim 过大：`claim-evidence-mapper`
 - 引用核验：`citation-reality-guard`
+- reviewer comments 先拆路线图：`paper-ratchet-optimizer`
 - 实验叙事：`experiment-story-builder`
+- 复现性或人工评测协议检查：`experiment-story-builder`
 - 核心图设计：`figure-design-advisor`
 - 理论核查：`proof-consistency-checker`
 - 去 AI 味或查提示语残留：`writing-naturalness-guard`
