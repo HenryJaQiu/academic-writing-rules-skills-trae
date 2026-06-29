@@ -20,6 +20,8 @@ description: "拆解审稿意见、制定回应策略并起草逐条 rebuttal。
 2. 区分可立即澄清、可承诺修改、无法在 rebuttal 期完成的问题
 3. 保持尊重、克制、具体、可验证的回应风格
 4. 让 rebuttal 与后续修稿动作一致，避免空头承诺
+5. 保持 response 时态稳定，优先用现在完成时描述已完成澄清、已补充证据和已修正表述
+6. 保持用词自然精确，避免华丽化或 AI 式不自然替换
 
 ## 执行步骤
 
@@ -50,6 +52,13 @@ description: "拆解审稿意见、制定回应策略并起草逐条 rebuttal。
 3. 指向现有证据或新增证据
 4. 如有必要，给出将补入正文的具体位置和内容
 
+时态与措辞规则：
+
+- 优先用现在完成时描述已经完成的解释、补充和修正，如 “We have clarified...”, “We have added...”, “We have revised...”
+- 用一般现在时陈述当前稿件中现在成立的事实与结构，如 “Section 4 now reports...”
+- 少用会被读成空头承诺的将来式，除非确实是在说明 revision 阶段的后续动作
+- 避免不自然的高级词、法律/行政腔和显得像机器替换的近义词
+
 ### Step 4: 检查承诺风险
 
 逐条检查：
@@ -75,6 +84,8 @@ description: "拆解审稿意见、制定回应策略并起草逐条 rebuttal。
 - 不要在 rebuttal 中继续扩大主张
 - 不要回避最关键的 novelty / evidence / fairness 问题
 - 不要写空洞感谢，核心是快速、具体、可信
+- 不要把“我们已经完成”的动作写得像未来计划
+- 不要把普通学术词硬替换成不自然的华丽词，如无必要不要把 `judgment` 改成 `adjudication`
 
 ## 标准输入
 
@@ -92,6 +103,7 @@ description: "拆解审稿意见、制定回应策略并起草逐条 rebuttal。
 - rebuttal 初稿
 - 需要同步修改正文的动作列表
 - 高风险措辞提醒
+- 若需要，附 `Tense Fixes / Lexical Precision Warnings`
 
 ## Examples
 
