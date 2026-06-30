@@ -98,6 +98,22 @@ skills/
 
 ## 推荐使用方式
 
+### 0. 默认交互原则
+
+这套库默认遵循 `clarify-before-commit`：
+
+- 如果一个 Skill 的高质量输出依赖少量关键上下文，而这些信息尚未确认，就先补 `Clarifications Needed`
+- 只前置询问真正影响质量、风险边界和可回滚性的最小问题集，避免把用户拖进冗长问卷
+- 如果用户已经明确授权某类改动，则不重复追问；如果未说明，则默认采用更保守边界
+
+这个原则尤其适用于：
+
+- `rebuttal-response-drafter`
+- `paper-ratchet-optimizer`
+- `writing-naturalness-guard`
+- `citation-reality-guard`
+- 接受 PDF / OCR / 文档解析结果的相关流程
+
 ### 1. 模糊请求入口
 
 当需求还比较模糊时，先走：

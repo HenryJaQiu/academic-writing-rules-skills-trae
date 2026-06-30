@@ -47,6 +47,9 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - `review-only`：用户说“先 review，不要润色” -> `reviewer-risk-audit`
 - `figure-only`：用户说“先看图怎么画/怎么改” -> `figure-design-advisor`
 - `experiment-only`：用户说“先看实验怎么补”“先判断哪些实验该进主文” -> `experiment-story-builder`
+- `rebuttal-compact`：用户说“字符限制很紧”“帮我压成精简 rebuttal”“保留结构但压短” -> `rebuttal-response-drafter`
+- `reviewer-specific-response`：用户说“不要只写统一总回复”“每位 reviewer 单独回应” -> `rebuttal-response-drafter`
+- `inline-revision-plan`：用户说“把 manuscript changes 写进每条 response”“不要把 planned revisions 都堆最后” -> `rebuttal-response-drafter`
 
 ## paper type 防滥用护栏
 
@@ -155,6 +158,15 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 
 - 信号：收到 reviews、写 rebuttal、写 response letter
 - 主 Skill：`rebuttal-response-drafter`
+- 微意图补充：
+- 若用户说“系统要求统一提交，但我仍想保留 reviewer-specific 结构”：直接走 `rebuttal-response-drafter`
+- 若用户说“字符限制很紧，先压缩 rebuttal”：直接走 `rebuttal-response-drafter` 的 `tight` 或 `submission-compact`
+- 若用户说“把 revision in manuscript 嵌回每条 response”：直接走 `rebuttal-response-drafter`
+- 默认理解：
+- 优先保留 `Overall Response + Reviewer-specific Responses`
+- 优先让 hardest points 单独成条，而不是被统一总回复稀释
+- 优先把 `Revision in manuscript` inline 写进对应 concern，而不是单独堆在最后
+- 若字符上限、reviewer 数量、hardest points、已完成 vs 计划完成、是否允许承诺新实验等关键信息不明确，先停下来询问用户，不直接生成完整 rebuttal
 
 ## 风险加挂规则
 
@@ -236,6 +248,7 @@ description: "识别论文任务所处阶段并路由到合适的写作、核验
 - `最高优先级风险`
 - `paper type 判断或待判断状态`
 - `若命中微意图，说明对应 shortcut`
+- `若关键信息缺失，先列 Clarifications Needed`
 - `推荐调用`
 - `执行顺序`
 - `暂不建议现在做的事`

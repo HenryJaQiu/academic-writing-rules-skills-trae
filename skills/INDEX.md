@@ -11,11 +11,16 @@
 - `PLAYBOOK.md`
 - `CONVENTIONS.md`
 
+默认交互原则：
+
+- 若任务需要少量关键上下文才能安全、高质量执行，而这些信息尚未确认，先补 `Clarifications Needed`，再进入完整执行
+- 高风险场景默认优先这样做：`rebuttal-response-drafter`、`paper-ratchet-optimizer`、`writing-naturalness-guard`、`citation-reality-guard`、PDF/OCR 输入相关流程
+
 ## 入口层
 
 ### `paper-intake-router`
 
-- 作用：识别论文所处阶段、主风险和下一步 Skill 链，并支持 checkpoint dashboard、abstract-only、outline-only、revision-coach、citation-check 等微意图快捷分流
+- 作用：识别论文所处阶段、主风险和下一步 Skill 链，并支持 checkpoint dashboard、abstract-only、outline-only、revision-coach、citation-check、rebuttal-compact 等微意图快捷分流
 - 何时调用：用户请求模糊、任务跨多个阶段、需要自动分流，或虽需求具体但还没明确该调用哪个 Skill
 - 常见后续：`academic-paper-factory`、`paper-positioning`、`reviewer-risk-audit`
 
@@ -141,8 +146,8 @@
 
 ### `rebuttal-response-drafter`
 
-- 作用：拆解 reviewer comments、制定回应策略并起草 rebuttal / response letter
-- 何时调用：已经收到审稿意见
+- 作用：拆解 reviewer comments、制定回应策略并起草带 reviewer-specific replies、inline manuscript revisions 与 compact 模式的 rebuttal / response letter
+- 何时调用：已经收到审稿意见，或需要在字符限制下压缩 rebuttal 但保留 reviewer-specific 结构
 - 常见前置：`reviewer-risk-audit`
 
 ## 快速选择
@@ -173,3 +178,5 @@
 - 最终打包：`latex-submission-packager`
 - venue 格式适配：`venue-submission-adapter`
 - rebuttal：`rebuttal-response-drafter`
+- 字符受限 rebuttal 压缩：`rebuttal-response-drafter`
+- reviewer-specific rebuttal / inline revision：`rebuttal-response-drafter`

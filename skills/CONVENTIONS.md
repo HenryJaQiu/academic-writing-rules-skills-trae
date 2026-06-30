@@ -105,6 +105,15 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 建议动作
 - 如需 handoff，明确下一个 Skill
 
+## 默认交互原则
+
+- 默认采用 `clarify-before-commit`：若一个 Skill 的高质量输出依赖少量关键上下文，而这些信息尚未确认，先向用户提问，再进入完整执行
+- “少量关键上下文”通常包括：任务边界、允许改动范围、是否允许承诺未完成工作、字符/页数限制、是否已有核验结果、是否必须保留某种输出结构
+- 默认只前置询问真正影响结论质量、风险边界或后续可回滚性的最小问题集，避免把用户拖进冗长问卷
+- 若用户已经明确授权某类改动，则不重复追问；若用户未说明，则默认采用保守边界
+- 若信息缺失不足以安全继续，标准交付应先给 `Clarifications Needed`，而不是用乐观假设补全
+- rebuttal、paper-ratchet、writing-naturalness、citation、PDF/OCR ingestion 这类高风险场景，应优先启用该原则
+
 ## 质量约定
 
 - 不能包含虚构引用、虚构 venue 要求或虚构投稿规范
@@ -122,6 +131,10 @@ description: "说明这个 Skill 做什么，以及何时调用它。"
 - 任何以 PDF、扫描件、OCR 文本或文档转 Markdown 结果作为输入的 Skill，都必须先做 `解析质量门禁`：区分原生文本 PDF、OCR、扫描版或二手摘录
 - 若 PDF 解析结果可能丢失页码锚点、多栏顺序、表格结构、公式、脚注或图注，默认不支持强结论；必须要求回原 PDF、截图或手工摘录复核
 - 从 PDF 自动提取出的标题、作者、DOI、年份、表格数字或公式符号，默认都不是最终可信事实；进入正文或 `.bib` 前必须经过对应 Skill 的核验
+- 若一个 Skill 的高质量输出依赖少量关键上下文且这些信息尚未确认，默认先向用户提问，不得用乐观假设直接补全
+- 对 rebuttal / response 类 Skill，至少优先确认：字符限制、reviewer-specific 结构要求、hardest points、已完成 vs 计划完成边界、是否允许承诺高风险新实验
+- 对 `paper-ratchet-optimizer`，至少优先确认：本轮唯一目标、是否允许动 `claim` 边界、是否允许改 `.bib` / `figures` / `appendix` / `checklist`
+- 对 `writing-naturalness-guard`，至少优先确认：是否只做风格自然化、引用真实性是否已核验、是否允许 `voice calibration`
 
 ## 演化约定
 

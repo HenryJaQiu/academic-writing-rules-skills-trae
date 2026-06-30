@@ -163,6 +163,23 @@
 
 ## 推荐使用方式
 
+### 默认交互原则
+
+这套库默认不是“信息不全也先硬写”，而是优先执行 `clarify-before-commit`：
+
+- 当任务边界、允许改动范围、字符/页数限制、已完成 vs 计划完成状态、引用是否已核验等关键信息不明确时，先问最小问题集
+- 问题应尽量少，但必须足以避免高风险误判、误承诺和不可回滚改动
+- 若用户已明确授权某类改动，则不重复追问；若未说明，则默认采用更保守边界
+- 若当前信息缺口已经阻止高质量执行，先产出 `Clarifications Needed`，再进入完整起草/修稿/自然化流程
+
+这个原则尤其适用于：
+
+- `rebuttal-response-drafter`
+- `paper-ratchet-optimizer`
+- `writing-naturalness-guard`
+- `citation-reality-guard`
+- 接受 PDF / OCR / 文档解析结果的 Skills
+
 ### 模糊请求
 
 如果用户说：
@@ -255,6 +272,12 @@
 推荐链路：
 
 `paper-intake-router -> rebuttal-response-drafter`
+
+其中 `rebuttal-response-drafter` 现在默认强调：
+
+- `Overall Response + Reviewer-specific Responses`
+- 每条 concern 尽量附 `Revision in manuscript`
+- 在字符限制下切到 `tight` 或 `submission-compact`，但尽量不丢 reviewer-specific 结构
 
 ## 每个 Skill 的统一要求
 
